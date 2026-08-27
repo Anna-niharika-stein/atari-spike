@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 behavioural_pipeline.py
-Anna S. N. Stein -- GAMECHAR Project, TU/e Human-Centered AI Group
 
 -------------------------------------------------------------------------------
 Overview
