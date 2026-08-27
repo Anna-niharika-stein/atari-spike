@@ -1,2 +1,0 @@
-file,participant,game,steps,episodes,total_return,entropy,switch,capture_hz,flags
-human_session_kung_fu_master_2026-08-17T14-08-30-208Z.csv,,kung_fu_master,1066,1,1300.0,2.212,0.235,59.9,"80 steps (7.5%) used an action outside the minimal set [0, 2, 3, 4, 5, 8, 9, 11, 12, 13, 14, 15, 16, 17] -> logged as NOOP"

@@ -2,6 +2,8 @@
 human_raw_test_data/
 agent_test_data/
 outputs/
+aligned/
+atari_ale_roms/
 *.zip
 __pycache__/
 *.pyc
