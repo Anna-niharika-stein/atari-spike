@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-behavioural_pipeline.py
+behavioural_analysis_pipeline.py
 
 -------------------------------------------------------------------------------
 Overview
