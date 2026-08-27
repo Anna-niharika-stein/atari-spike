@@ -1,78 +1,96 @@
 #!/usr/bin/env python3
 """
-Unified behavioural analysis pipeline for Atari human-vs-agent gameplay.
+behavioural_pipeline.py
+Anna S. N. Stein -- GAMECHAR Project, TU/e Human-Centered AI Group
 
-This runs the same analysis as the per-game thesis notebooks
-(breakout_behavioural_analysis.ipynb / pong_behavioural_analysis.ipynb) but
-across every usable game in game_config.json, driven by that config instead of
-one hand-written notebook per game.
+-------------------------------------------------------------------------------
+Overview
+-------------------------------------------------------------------------------
+This pipeline runs the full behavioural analysis across all usable Atari games
+in game_config.json, producing the three descriptor classes developed in my
+MSc thesis and extended here to scale across the full Atari-57 benchmark.
 
-For each game it computes the three thesis descriptor classes:
-  1. Performance         (return, reward density, first-reward latency, ...)
-  2. Action structure    (entropy, switching rate, run length, motif diversity)
-  3. RAM-state visitation (exact uniqueness/overlap, PCA, k-means, JS / TV distance)
+The descriptor logic matches the original per-game thesis notebooks so that
+results remain directly comparable. The key addition here is that the pipeline
+is fully config-driven -- one script handles all games rather than one notebook
+per game, with per-game variation handled through game_config.json.
 
-Descriptor logic is copied verbatim from the notebooks so results stay
-thesis-consistent. The only per-game variation is FIRE handling, which is
-auto-derived from each game's minimal_action_set and can be overridden in the
-config (see FIRE HANDLING below).
+-------------------------------------------------------------------------------
+Descriptor classes
+-------------------------------------------------------------------------------
+For each game and each available gameplay source (Human, PPO, DQN):
 
-------------------------------------------------------------------------------
-DATA LAYOUT (configure at the top if yours differs)
-------------------------------------------------------------------------------
-  human_raw_test_data/<game>/*.csv      one file per human episode (raw frames)
-  agent_test_data/<game>/ppo*.csv       PPO agent decision-step log
-  agent_test_data/<game>/dqn*.csv       DQN agent decision-step log
+  1. Performance
+       Episode return, reward density per 1000 raw frames, first-reward
+       latency, life losses, episode end type (natural vs. capped).
+       Only computed for games with status = verified or partial in the config.
 
-A game with no files found is skipped with a message, not an error, so you can
-run this now (before generating data) and it will simply report what's missing.
+  2. Action structure
+       Action distribution, entropy, switching rate, mean run length,
+       trigram and four-gram motif diversity, and top motifs.
+       Computed for all games regardless of score-byte status.
 
-Every CSV must have the 265-column schema: run_ts, episode, step, action,
-reward, done, episode_return, lives_pre, lives_post, ram_pre_0..127,
-ram_post_0..127. (ram_post is not required by the analysis but is allowed.)
+  3. RAM-state visitation
+       Exact RAM-state uniqueness and Jaccard overlap, PCA projection
+       (exploratory only), MiniBatchKMeans clustering (k=15, with sensitivity
+       checks at k=10 and k=20), Jensen-Shannon and total-variation distances
+       between source visitation distributions.
+       Computed for all games regardless of score-byte status.
 
-------------------------------------------------------------------------------
-WHICH GAMES RUN, AND TO WHAT DEPTH
-------------------------------------------------------------------------------
-Performance descriptors need a working score (reward column meaningful).
-Action-structure and RAM descriptors need only actions and RAM.
+-------------------------------------------------------------------------------
+Which games run, and to what depth
+-------------------------------------------------------------------------------
+  verified     -> full analysis (performance + action structure + RAM)
+  partial      -> full analysis, performance flagged as low-confidence
+  lives_seeded -> action structure + RAM only
+  lives_only   -> action structure + RAM only
 
-  status = verified        -> full analysis (performance + action + RAM)
-  status = partial         -> full, but performance flagged low-confidence
-  status = lives_seeded    -> action + RAM only (performance skipped)
-  status = lives_only      -> action + RAM only (performance skipped)
+A game missing data files is skipped with a logged message rather than
+crashing, so the pipeline can be run incrementally as new sessions come in.
 
-So a game never loses its action/RAM analysis just because its score isn't
-verified. Games excluded entirely: only those absent from the config.
+-------------------------------------------------------------------------------
+FIRE handling (auto-derived, overridable per game)
+-------------------------------------------------------------------------------
+FIRE is not a meaningful movement decision in most games -- it serves the ball
+in Breakout, is absent in Freeway and Asterix, and is a directional modifier
+in Pong. The pipeline derives a FIRE handling rule per game automatically:
 
-------------------------------------------------------------------------------
-FIRE HANDLING (auto-derived, override in config)
-------------------------------------------------------------------------------
-FIRE is not a paddle/movement decision, so the notebooks treat it specially.
-This pipeline derives a rule per game from its minimal_action_set:
-
-  none      no FIRE and no FIRE-combo actions in the set
-            (e.g. freeway [0,2,5], skiing, asterix) -> nothing to do
-  exclude   FIRE present, but no directional FIRE-combos
-            (e.g. breakout [0,1,3,4]) -> drop FIRE windows (Breakout-style)
+  none      no FIRE or FIRE-combo actions in the minimal set
+            (e.g. freeway, skiing, asterix) -- no adjustment needed
+  exclude   FIRE present but no directional FIRE-combos
+            (e.g. breakout) -- FIRE windows dropped before descriptors
   collapse  directional FIRE-combos present
-            (e.g. pong [..,11,12]) -> map RIGHTFIRE->RIGHT etc. (Pong-style)
-  keep      (never auto-derived) FIRE treated as its own real action
+            (e.g. pong, space_invaders, seaquest) -- RIGHTFIRE mapped to
+            RIGHT, LEFTFIRE to LEFT etc., preserving the movement component
 
-TO OVERRIDE: add a "fire_handling" field to the game in game_config.json, e.g.
+To override for a specific game, add a "fire_handling" field in game_config.json:
     "seaquest": { ..., "fire_handling": "keep" }
-If present it wins; if absent the pipeline auto-derives and prints its choice.
-The chosen rule per game is written to outputs/_summary/fire_handling.csv.
 
-------------------------------------------------------------------------------
-USAGE
-------------------------------------------------------------------------------
-  python behavioural_pipeline.py                 # all usable games in config
-  python behavioural_pipeline.py --games pong breakout seaquest
-  python behavioural_pipeline.py --config game_config.json \
-         --human-root human_raw_test_data --agent-root agent_test_data \
-         --out-root outputs
-  python behavioural_pipeline.py --skip-ram      # faster; no PCA/clustering
+Valid values: "none", "exclude", "collapse", "keep".
+The rule applied to each game is logged to outputs/_summary/fire_handling.csv.
+
+-------------------------------------------------------------------------------
+Data layout
+-------------------------------------------------------------------------------
+  human_raw_test_data/<game>/*.csv     aligned human session CSV (265 cols)
+  agent_test_data/<game>/ppo*.csv      PPO agent log (265 cols)
+  agent_test_data/<game>/dqn*.csv      DQN agent log (265 cols)
+
+All CSVs must follow the 265-column schema:
+  run_ts, episode, step, action, reward, done, episode_return,
+  lives_pre, lives_post, ram_pre_0..127, ram_post_0..127
+
+Human sessions should be the aligned output of run_pipeline.py, not the
+raw ~60Hz recorder output.
+
+-------------------------------------------------------------------------------
+Usage
+-------------------------------------------------------------------------------
+  python behavioural_pipeline.py
+  python behavioural_pipeline.py --games breakout seaquest freeway
+  python behavioural_pipeline.py --skip-ram
+  python behavioural_pipeline.py --no-figures
+  python behavioural_pipeline.py --save-aligned
 """
 
 from __future__ import annotations
@@ -101,7 +119,7 @@ except Exception:  # pragma: no cover
 
 
 # ============================================================================
-# Constants (identical to the notebooks)
+# Constants
 # ============================================================================
 ACTION_NAMES = {
     0: "NOOP", 1: "FIRE", 2: "UP", 3: "RIGHT", 4: "LEFT", 5: "DOWN",
@@ -110,10 +128,9 @@ ACTION_NAMES = {
     14: "UPRIGHTFIRE", 15: "UPLEFTFIRE", 16: "DOWNRIGHTFIRE", 17: "DOWNLEFTFIRE",
 }
 FIRE_ACTION = 1
-FIRE_COMBO_ACTIONS = {10, 11, 12, 13, 14, 15, 16, 17}  # UPFIRE..DOWNLEFTFIRE
+FIRE_COMBO_ACTIONS = {10, 11, 12, 13, 14, 15, 16, 17}
 
-# Map any FIRE-combination action to its movement component (Pong-style collapse).
-# NOOP/FIRE -> NOOP; RIGHT/RIGHTFIRE -> RIGHT; LEFT/LEFTFIRE -> LEFT; etc.
+# Maps each FIRE-combination action to its movement component for the collapse rule.
 COLLAPSE_TO_MOVEMENT = {
     0: 0, 1: 0,           # NOOP, FIRE           -> NOOP
     2: 2, 10: 2,          # UP, UPFIRE           -> UP
@@ -136,7 +153,7 @@ BASE_COLS = ["run_ts", "episode", "step", "action", "reward", "done",
 RAM_COLS = [f"ram_pre_{i}" for i in range(128)]
 REQUIRED_COLS = BASE_COLS + RAM_COLS
 
-# RAM clustering / PCA parameters (identical to the notebooks)
+# RAM clustering / PCA parameters
 NEAR_CONST_STD_THRESHOLD = 1.0
 K_MAIN = 15
 K_SENSITIVITY = [10, 20]
@@ -152,11 +169,7 @@ LOW_CONFIDENCE_STATUSES = {"partial"}
 # FIRE handling
 # ============================================================================
 def derive_fire_handling(minimal_action_set):
-    """Auto-derive a FIRE rule from a game's minimal action set.
-
-    Returns one of: "none", "exclude", "collapse".
-    ("keep" is only ever set explicitly via config override.)
-    """
+    """Derive FIRE rule from the minimal action set: none / exclude / collapse."""
     aset = set(int(a) for a in minimal_action_set)
     has_fire = FIRE_ACTION in aset
     has_combo = len(aset & FIRE_COMBO_ACTIONS) > 0
@@ -168,7 +181,7 @@ def derive_fire_handling(minimal_action_set):
 
 
 def resolve_fire_handling(game_cfg):
-    """Config override if present, else auto-derived. Returns (rule, source)."""
+    """Return (rule, source) -- config override wins over auto-derived."""
     override = game_cfg.get("fire_handling")
     if override in {"none", "exclude", "collapse", "keep"}:
         return override, "config-override"
@@ -176,12 +189,7 @@ def resolve_fire_handling(game_cfg):
 
 
 def report_actions_for_rule(minimal_action_set, rule):
-    """Which action labels the descriptors are computed over, given the rule.
-
-    - none / keep: every action in the minimal set (keep counts FIRE as itself)
-    - exclude:     every action in the minimal set except FIRE
-    - collapse:    the movement labels the set collapses onto
-    """
+    """Return the action labels descriptors are computed over for this FIRE rule."""
     aset = sorted(int(a) for a in minimal_action_set)
     if rule == "collapse":
         movement = sorted({COLLAPSE_TO_MOVEMENT.get(a, a) for a in aset})
@@ -192,13 +200,7 @@ def report_actions_for_rule(minimal_action_set, rule):
 
 
 def apply_fire_rule(actions, rule):
-    """Transform an action sequence according to the FIRE rule.
-
-    Returns the sequence the descriptors should be computed on.
-    - exclude: FIRE windows removed
-    - collapse: FIRE-combos mapped to movement component
-    - none / keep: unchanged
-    """
+    """Apply the FIRE rule to an action sequence before computing descriptors."""
     a = np.asarray(actions, dtype=int)
     if rule == "exclude":
         return a[a != FIRE_ACTION]
@@ -211,14 +213,13 @@ def apply_fire_rule(actions, rule):
 # Loading
 # ============================================================================
 def find_csvs(root: Path, game: str, patterns):
-    """Return sorted CSVs under root/<game>/ matching any of the glob patterns."""
+    """Return sorted CSVs under root/<game>/ matching any of the given glob patterns."""
     gdir = root / game
     if not gdir.is_dir():
         return []
     found = []
     for pat in patterns:
         found.extend(sorted(gdir.glob(pat)))
-    # de-dup while preserving order
     seen, out = set(), []
     for p in found:
         if p not in seen:
@@ -264,7 +265,7 @@ def load_human(files, game: str):
 
 
 # ============================================================================
-# 1. Performance descriptors (verbatim logic from the notebooks)
+# 1. Performance descriptors
 # ============================================================================
 def episode_performance(raw_all, game):
     rows = []
@@ -317,7 +318,7 @@ def summarize_numeric(df, metrics, group_col="source"):
 
 
 # ============================================================================
-# 2. Temporal alignment (verbatim from the notebooks)
+# 2. Temporal alignment
 # ============================================================================
 def modal_action_earliest_tie(actions):
     actions = list(map(int, actions))
@@ -374,7 +375,7 @@ def build_aligned(human_raw, agent_raws, game):
 
 
 # ============================================================================
-# 3. Action-structure descriptors (verbatim from the notebooks)
+# 3. Action-structure descriptors
 # ============================================================================
 def action_entropy_bits(actions, report_actions):
     actions = np.asarray(actions, dtype=int)
@@ -426,7 +427,6 @@ def top_ngrams(actions, n, k=10):
 
 
 def action_structure(aligned, game, fire_rule, report_actions):
-    """Per-episode action-structure metrics after applying the FIRE rule."""
     rows = []
     for (source, ep), g in aligned.groupby(["source", "global_episode"], sort=True):
         g = g.sort_values("step")
@@ -444,7 +444,6 @@ def action_structure(aligned, game, fire_rule, report_actions):
             "trigram_diversity": ngram_diversity(actions, 3),
             "fourgram_diversity": ngram_diversity(actions, 4),
         }
-        # movement/label proportions
         aa = np.asarray(actions, dtype=int)
         denom = len(aa)
         for lab in report_actions:
@@ -470,7 +469,7 @@ def motif_table(aligned, game, fire_rule, k=10):
 
 
 # ============================================================================
-# 4. RAM-state visitation (verbatim from the notebooks)
+# 4. RAM-state visitation
 # ============================================================================
 def js_divergence(p, q):
     p = np.asarray(p, float); q = np.asarray(q, float)
@@ -680,7 +679,6 @@ def run_game(game, game_cfg, args):
     if dqn_files:
         agent_raws["DQN"] = load_agent(dqn_files[0], "DQN", game)
 
-    # output dirs
     out_root = Path(args.out_root)
     gdir = out_root / game
     tdir = gdir / "tables"
@@ -689,7 +687,6 @@ def run_game(game, game_cfg, args):
         d.mkdir(parents=True, exist_ok=True)
     out_dirs = {"tables": tdir, "figures": fdir}
 
-    # combined raw for performance
     raw_frames = []
     if human_raw is not None:
         raw_frames.append(human_raw)
@@ -748,11 +745,10 @@ def run_game(game, game_cfg, args):
 # Cross-game master table
 # ============================================================================
 def build_master_table(out_root: Path, games_run):
-    """One row per game x source with headline descriptors, for cross-game view.
+    """One row per game x source with headline descriptors.
 
-    Performance columns are left blank for games without a verified score, and a
-    'performance_available' flag marks which rows carry meaningful reward numbers.
-    No cross-game averaging is done here: raw within-game values only.
+    Performance columns are blank for games without a verified score.
+    Values are raw within-game numbers -- no cross-game averaging.
     """
     rows = []
     for game in games_run:
@@ -802,8 +798,6 @@ def main():
 
     cfg = json.load(open(args.config))
 
-    # usable = present in config with a known status (exclude nothing by default;
-    # depth of analysis is decided per game by status inside run_game)
     if args.games:
         games = [g for g in args.games if g in cfg]
         missing = [g for g in args.games if g not in cfg]
@@ -836,7 +830,6 @@ def main():
         fire = f"fire={info['fire_handling']}({info['fire_source'][0]})"
         print(f"  {game:20s} {status_msg:22s} {fire:16s} {' '.join(extra)}")
 
-    # summary tables
     summary = pd.DataFrame(infos)
     summary.to_csv(out_root / "_summary" / "run_summary.csv", index=False)
 
