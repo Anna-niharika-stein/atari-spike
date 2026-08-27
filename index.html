@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atari Human Recorder</title>
+  <style>
+    :root {
+      --bg:#14152e; --bg2:#1a1b3a; --card:#20224a; --card2:#262a5c;
+      --line:#333868; --gold:#f4a521; --teal:#2bb6a3; --red:#e8604c;
+      --text:#f7f8fc; --muted:#9aa2cf; --dim:#6b719e;
+    }
+    * { box-sizing:border-box; }
+    body {
+      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      margin:0; padding:28px 24px 40px;
+      background:radial-gradient(1200px 600px at 20% -10%, #1d1f45 0%, var(--bg) 60%);
+      color:var(--text); min-height:100vh;
+    }
+    .container { max-width:1080px; margin:0 auto; }
+    header { margin-bottom:20px; }
+    h1 { font-size:22px; margin:0 0 4px; letter-spacing:-.2px; }
+    h1 .accent { color:var(--gold); }
+    .tagline { color:var(--muted); font-size:13.5px; margin:0; }
+    .toolbar {
+      display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+      background:var(--card); border:1px solid var(--line); border-radius:12px;
+      padding:12px 14px; margin-bottom:18px;
+    }
+    .field { display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--muted); }
+    .field input {
+      background:var(--bg2); border:1px solid var(--line); border-radius:8px;
+      color:var(--text); padding:7px 10px; font-size:13px; width:120px;
+    }
+    .field input:focus { outline:none; border-color:var(--teal); }
+    .rompill { margin-left:auto; font-size:12px; color:var(--dim); }
+    .rompill b { color:var(--muted); }
+    .grid { display:grid; grid-template-columns:minmax(0,1fr) 360px; gap:18px; align-items:start; }
+    @media (max-width:900px){ .grid { grid-template-columns:1fr; } }
+    .card {
+      background:var(--card); border:1px solid var(--line); border-radius:14px;
+      padding:16px 18px; box-shadow:0 8px 24px rgba(0,0,0,.28);
+    }
+    .card h2 {
+      font-size:11px; letter-spacing:1.4px; text-transform:uppercase;
+      color:var(--gold); margin:0 0 12px; font-weight:700;
+    }
+    .screen-wrap { display:flex; justify-content:center; padding:6px; }
+    #javatari-screen { border-radius:8px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,.6); }
+    .status {
+      display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:12px;
+      background:var(--card2); border:1px solid var(--line); margin-bottom:14px; transition:.2s;
+    }
+    .status .dot { width:12px; height:12px; border-radius:50%; background:var(--dim); flex:0 0 auto; }
+    .status .txt { font-weight:700; font-size:15px; }
+    .status .sub { font-size:12px; color:var(--muted); margin-top:2px; font-weight:400; }
+    .status.ready  { border-color:var(--line); }
+    .status.armed  { border-color:var(--gold); background:#2a2740; }
+    .status.armed .dot { background:var(--gold); animation:pulse 1.1s infinite; }
+    .status.rec    { border-color:var(--red); background:#2e2140; }
+    .status.rec .dot   { background:var(--red); animation:pulse .9s infinite; }
+    .status.done   { border-color:var(--teal); background:#123028; }
+    .status.done .dot  { background:var(--teal); }
+    @keyframes pulse { 50%{opacity:.3} }
+    .btn {
+      display:block; width:100%; border:0; border-radius:10px; cursor:pointer;
+      font-weight:700; font-size:14px; padding:13px; margin-bottom:9px; transition:.15s;
+    }
+    .btn-primary { background:var(--gold); color:#241a05; }
+    .btn-primary:hover { filter:brightness(1.07); }
+    .btn-stop { background:var(--red); color:#fff; }
+    .btn-ghost { background:var(--bg2); color:var(--muted); border:1px solid var(--line); }
+    .btn-ghost:hover { color:var(--text); }
+    .btn:disabled { opacity:.4; cursor:not-allowed; }
+    .mono { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12.5px;
+            color:var(--muted); white-space:pre-wrap; line-height:1.55; margin:0; }
+    .monitor {
+      display:flex; align-items:center; justify-content:space-between;
+      background:var(--bg2); border-radius:9px; padding:9px 12px; font-size:13px; margin-bottom:12px;
+    }
+    .monitor .keys { font-family:ui-monospace,monospace; letter-spacing:1px; color:var(--text); }
+    .monitor .act { color:var(--dim); font-size:12px; }
+    .monitor .act.on { color:var(--teal); font-weight:700; }
+    .hint { font-size:12.5px; color:var(--muted); line-height:1.7; }
+    kbd { background:var(--bg2); border:1px solid var(--line); border-radius:5px;
+          padding:1px 7px; font-family:ui-monospace,monospace; font-size:11.5px; }
+    .steps { margin:0; padding-left:20px; }
+    .steps li { margin:5px 0; }
+    .ok  { color:var(--teal); font-weight:700; }
+    .bad { color:var(--red);  font-weight:700; }
+    details { margin-top:16px; }
+    details summary { cursor:pointer; color:var(--dim); font-size:12px; letter-spacing:.5px; }
+    details .card { margin-top:10px; }
+    .diag-btns { display:flex; gap:8px; margin-bottom:10px; }
+    .diag-btns button { flex:1; }
+    #banner { font-size:13px; font-weight:600; color:var(--teal); margin-bottom:14px; min-height:18px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Atari <span class="accent">Human Recorder</span></h1>
+    <p class="tagline">Records RAM + actions per frame. Capture begins automatically when play starts and ends when the game does.</p>
+  </header>
+
+  <div class="toolbar">
+    <div class="field">Game
+      <select id="gameSelect" onchange="switchGame(this.value)"
+        style="background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;min-width:170px"></select>
+    </div>
+    <div class="field">Participant / session
+      <input id="participant" type="text" placeholder="e.g. P07" autocomplete="off" />
+    </div>
+    <div class="field">
+      <button id="folderBtn" onclick="chooseFolder()"
+        style="background:var(--bg2);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:7px 12px;font-size:12.5px;font-weight:600;cursor:pointer">Save folder…</button>
+      <span id="folderName" style="color:var(--dim)">Downloads/human_data_files</span>
+    </div>
+    <div class="rompill">ROM <b id="romName">—</b> · <span id="ramStatus">loading…</span></div>
+  </div>
+
+  <div id="banner"></div>
+
+  <div id="gameInfo" style="background:var(--bg2);border:1px solid var(--line);border-radius:10px;
+       padding:11px 14px;margin:0 0 14px;font-size:13px;line-height:1.5">
+    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:3px">
+      <b id="giName" style="font-size:13.5px;color:var(--text)">—</b>
+      <span id="giTag" style="font-size:11px;color:var(--dim)"></span>
+    </div>
+    <div id="giGoal" style="color:var(--muted)"></div>
+    <div id="giControls" style="color:var(--text);margin-top:4px">
+      <span style="color:var(--dim)">Controls: </span><span id="giControlsTxt"></span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>Game</h2>
+        <div class="screen-wrap"><div id="javatari-screen"></div></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h2>How to play</h2>
+        <ol class="steps hint">
+          <li id="ctrlHint">Use the arrow keys to move. <kbd>Space</kbd> to fire/serve.</li>
+          <li>Hit <b>Start recording</b> and just play — capture begins automatically when the game starts.</li>
+          <li>The recorder stops automatically when the game ends; then click <b>Download</b>.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>Record</h2>
+        <div id="statusCard" class="status ready">
+          <div class="dot"></div>
+          <div>
+            <div class="txt" id="statusTxt">Ready</div>
+            <div class="sub" id="statusSub">Press start when you're set to play.</div>
+          </div>
+        </div>
+        <button id="primaryBtn" class="btn btn-primary" onclick="onPrimary();this.blur()">Start recording</button>
+        <button id="downloadBtn" class="btn btn-ghost" onclick="downloadSession();this.blur()" disabled>Download session CSV</button>
+        <div class="monitor">
+          <span class="keys" id="monKeys">(no keys)</span>
+          <span class="act" id="monAct">action 0</span>
+        </div>
+        <pre class="mono" id="recout">No take yet.</pre>
+      </div>
+
+      <details>
+        <summary>Diagnostics (RAM &amp; timing checks)</summary>
+        <div class="card">
+          <div class="diag-btns">
+            <button class="btn btn-ghost" style="margin:0" onclick="sampleRAM()">Sample RAM</button>
+            <button class="btn btn-ghost" style="margin:0" id="diagBtn" onclick="diagnostic(300)">Byte + timing test</button>
+          </div>
+          <button class="btn btn-ghost" id="padBtn" onclick="paddleEdgeTest(15)">Paddle edge test (15 s)</button>
+          <pre class="mono" id="out">Use these to confirm RAM is live and the clock is ~60 Hz.</pre>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var g = (params.get("game") || "breakout").trim().toLowerCase();
+  window.GAME    = /^[a-z0-9_]+$/.test(g) ? g : "breakout";
+  window.ROM_DIR = "atari_ale_roms";
+  window.ROM     = window.ROM_DIR + "/" + window.GAME + ".bin";
+  // To populate atari_ale_roms/, copy ROMs from the ale_py package:
+  //   python3 -c "from ale_py import roms; import shutil,pathlib; \
+  //     [shutil.copy(roms.get_rom_path(g), 'atari_ale_roms/') \
+  //      for g in roms.get_all_rom_ids()]"
+
+  // ── Per-game config ────────────────────────────────────────────────────
+  // paddle games: drive PADDLE position directly each frame (bypasses
+  // Javatari's key→JOY0/JOY1 layer which has wrong-player and speed-OSD bugs).
+  //
+  // potMin/Max: the pot range that corresponds to the physical screen edges.
+  //   Tune with "Paddle edge test" if the paddle stalls before hitting the wall.
+  // step: pot units moved per frame while a key is held (~3.2 matches ALE avg).
+  // paddleByte: RAM byte holding on-screen paddle position (for edge test only).
+  // paddleSocket: which PADDLE*_POSITION constant to write (16384=P0, 16896=P1).
+  //   For Pong mode 1, human=right=PADDLE1 (16896). For Breakout, human=PADDLE0 (16384).
+  // aleMode: target value of ram[22] (ALE's mode byte masked to 0-127).
+  //   ALE pulses SELECT until ram[22] === aleMode, then soft-resets. -1 = skip.
+  // Per-game config for paddle games.
+  // aleMode    : target value of the mode RAM byte. ALE pulses SELECT until
+  //              modeRamByte equals aleMode, then soft-resets. -1 = skip.
+  // modeRamByte: RAM index of the mode byte (ALE address & 0x7F).
+  //              Pong: 0x96&0x7F=22. Breakout: 0xB2&0x7F=50.
+  // paddleSocket: PADDLE0_POSITION=16384 (left/only paddle),
+  //               PADDLE1_POSITION=16896 (right paddle, Pong human side).
+  // actions    : logged in ALE full-18 space.
+  //   Pong:     UP=2, DOWN=5  (human drives right paddle vertically)
+  //   Breakout: RIGHT=3, LEFT=4, FIRE=1  (paddle moves horizontally)
+  window.PADDLE_GAMES = {
+    breakout: { potMin:58, potMax:210, step:3, paddleByte:72,   paddleSocket:16384, aleMode:0,  modeRamByte:50, invertPot:true },
+    pong:     { potMin:12, potMax:219, step:3, paddleByte:51,   paddleSocket:16896, aleMode:0,  modeRamByte:22, invertPot:true  },
+    kaboom:   { potMin:55, potMax:325, step:3, paddleByte:null, paddleSocket:16384, aleMode:-1, modeRamByte:22, invertPot:false },
+    warlords: { potMin:55, potMax:325, step:3, paddleByte:null, paddleSocket:16384, aleMode:-1, modeRamByte:22, invertPot:false },
+  };
+  // For Javatari's legacy paddle key/speed machinery — keep OFF for games we
+  // drive directly; it prevents the speed-OSD and wrong-player bugs.
+  window.PADDLE_POT_MIN      = undefined;
+  window.PADDLE_POT_MAX      = undefined;
+  window.PADDLE_STEP_BASE    = undefined;
+  window.PADDLE_STEP_MAX     = undefined;
+  window.PADDLE_ACCEL_FRAMES = undefined;
+})();
+</script>
+<script src="javatari.js"></script>
+<script>
+  Javatari.CARTRIDGE_URL = window.ROM;
+  Javatari.AUTO_START    = true;
+  Javatari.AUTO_POWER_ON_DELAY = 500;
+  // Let Javatari auto-detect paddle mode from the ROM database (p:1 flag).
+  // We don't override PADDLES_MODE here — we drive the pot directly and don't
+  // need Javatari's key→paddle machinery at all.
+</script>
+
+<script>
+(function () {
+  "use strict";
+  const GAME = window.GAME, ROM = window.ROM;
+  const cfg  = (window.PADDLE_GAMES || {})[GAME] || null;   // null = joystick game
+  const isPaddle = !!cfg;
+
+  // Games where synthKey combinations (e.g. Space+Right) don't reliably reach
+  // Javatari as simultaneous inputs. For these we push joystick state directly
+  // via controlStateChanged each frame, bypassing the key→JOY chain entirely.
+  // JOY0 constants: UP=11, DOWN=12, LEFT=13, RIGHT=14, BUTTON=15
+  const DIRECT_JOY_GAMES = new Set(["atlantis", "double_dunk"]);
+  const isDirectJoy = DIRECT_JOY_GAMES.has(GAME);
+  // Games where directional input without FIRE is meaningless (no movement, only
+  // gun selection). Bare arrow presses log as NOOP rather than RIGHT/LEFT/UP/DOWN.
+  const FIRE_ONLY_GAMES = new Set(["atlantis"]);
+  // Games where score cannot be decoded from RAM (TIA-rendered). Marked with ? in dropdown.
+  const SCORE_UNAVAILABLE = new Set(["battle_zone"]);
+
+  const $ = id => document.getElementById(id);
+  const statusCard = $("statusCard"), statusTxt = $("statusTxt"), statusSub = $("statusSub");
+  const primaryBtn = $("primaryBtn"), downloadBtn = $("downloadBtn");
+  const recoutEl = $("recout"), outEl = $("out"), bannerEl = $("banner"), diagBtn = $("diagBtn");
+
+  $("romName").textContent = ROM;
+
+  // ── Game dropdown ──────────────────────────────────────────────────────
+  // The standard Atari-57 benchmark set (canonical for DQN/PPO/Rainbow/Agent57).
+  // Only breakout & pong are paddle games; the other 55 use the joystick path.
+  // Short how-to-play per game (goal + controls). Controls reflect the
+  // real ALE minimal action set for each ROM.
+  const GAME_INFO = {
+    alien: ["Move through the ship's corridors destroying alien eggs with your flamethrower while avoiding the aliens.", "Arrows move, Space = flamethrower."],
+    amidar: ["Paint the whole grid by tracing its lines while dodging enemies that chase you along the same paths.", "Arrows move. Space = temporary 'jump' to scare enemies."],
+    assault: ["Defend against waves of alien ships. Shoot upward and sideways; don't overheat your gun.", "Left/Right move, Up = shoot up, Space = fire. (Up is your main shot.)"],
+    asterix: ["Collect the good items (potions, food) and avoid the bad ones (harps) as you move around the grid.", "Arrows + diagonals move. No shooting — movement only. Space just starts the game."],
+    asteroids: ["Blast asteroids and saucers into smaller pieces and clear the field without being hit. Your ship drifts with momentum.", "Left/Right rotate, Up = thrust, Down = hyperspace (random teleport escape), Space = fire."],
+    atlantis: ["Protect your city's seven installations from waves of enemy ships flying overhead. Ships fly across in lanes at different heights — destroy them before they dive and bomb your city.", "Three fixed gun batteries, no movement. Space = center gun. Right + Space = right gun. Left + Space = left gun."],
+    bank_heist: ["Drive through maze-like cities robbing banks, dropping dynamite on chasing police, and managing fuel.", "Arrows move, Space = drop dynamite."],
+    battle_zone: ["First-person tank combat: destroy enemy tanks and missiles while dodging their fire.", "Arrows drive/turn, Space = fire."],
+    beam_rider: ["Clear 99 sectors of a grid-like space tunnel, shooting enemies and dodging debris.", "Left/Right move, Up, Space = fire."],
+    berzerk: ["Escape room-to-room in a maze shooting robots; don't touch walls or the enemies, and beware Evil Otto.", "Arrows + diagonals move, Space = shoot in the direction you face."],
+    bowling: ["Time your release and curve to knock down as many pins as possible.", "Up/Down aim, Space = release the ball (then steer its spin)."],
+    boxing: ["Land more punches than your opponent in the ring before time runs out.", "Arrows move around the ring, Space = punch."],
+    breakout: ["Bounce the ball with your paddle to break all the bricks; don't let it fall.", "Left/Right move the paddle, Space = launch the ball."],
+    centipede: ["Shoot the descending centipede, spiders and fleas in a mushroom field before they reach you.", "Arrows move, Space = fire."],
+    chopper_command: ["Fly a helicopter defending convoy trucks; shoot enemy planes and dodge their fire.", "Arrows fly, Space = fire."],
+    crazy_climber: ["Climb a skyscraper by moving your hands up window by window, dodging falling objects and open windows. You have 5 lives.", "Space: Start game. Climb: Up (moves one hand up, both hands must be up) then Down (set grip). Left/Right = shift sideways, only when both hands are gripping. Space starts the game."],
+    defender: ["Fly across a scrolling planet shooting aliens and rescuing humans before they're abducted.", "Arrows fly, Space = fire. (Also has smart-bomb/hyperspace.)"],
+    demon_attack: ["Blast waves of diving demon birds from your platform; dodge their shots.", "Left/Right move, Space = fire."],
+    double_dunk: ["2-on-2 basketball. Navigate a startup options screen before play begins — press Space to confirm each option. Controls are context-dependent: on offense you select plays, on defense you move directly.", "Space alone = select/confirm. Space+Arrow = execute move (shoot, pass, drive). Arrows alone = navigate menus. On defense: Arrows move your player, Space = steal/block. Most useful actions require Space held with a direction."],
+    enduro: ["Endurance car race: pass a required number of cars each day without crashing.", "Press space to start game. Left/Right steer, Space = accelerate, Down = brake."],
+    fishing_derby: ["Catch more fish by weight than your opponent; reel them up before their shark eats them.", "Arrows move your hook, Space = reel."],
+    freeway: ["Guide your chicken across a busy multi-lane highway without getting hit.", "Up = move up, Down = move down. That's it."],
+    frostbite: ["Hop across floating ice to build an igloo before you freeze; avoid hazards.", "Arrows + diagonals move/jump, Space = enter igloo when built."],
+    gopher: ["Protect your three carrots from a burrowing gopher by filling holes and bonking it.", "Press Space to start game and new round. Left/Right move, Space = fill hole / hit gopher."],
+    gravitar: ["Navigate gravity wells, shoot enemy bunkers, and manage fuel and thrust in space.", "Press Space to start game. Left/Right rotate, Up = thrust, Space = fire."],
+    hero: ["Each level has a miner trapped at the very bottom of a shaft. You need to navigate all the way down through the levels (blasting through brick sections using dynamite) and physically reach the miner's location. When you touch them the level ends. The enemies and walls get harder each level.", "Up = fly, Left/Right move, Down = drop dynamite (on land), Space = laser."],
+    ice_hockey: ["3-on-3 hockey: outscore the opponent by passing and shooting.", "Arrows move, Space = shoot/pass/check."],
+    jamesbond: ["Drive/fly a multi-terrain vehicle through levels shooting enemies and hitting targets.", "Arrows move, Space = fire."],
+    kangaroo: ["Climb a tower of platforms and ladders to reach your joey, punching monkeys and dodging fruit.", "Arrows + diagonals move/climb, Space = punch."],
+    krull: ["Move across a map fighting enemies in several sub-games to rescue your bride.", "Arrows + diagonals move, Space = throw weapon."],
+    kung_fu_master: ["Beat through floors of a temple defeating enemies to rescue the captive.", "Arrows move/jump/duck, Space+Left/Right = kick, Space+Down = low kick."],
+    montezuma_revenge: ["Explore a pyramid collecting keys and treasure, dodging traps and enemies. Very sparse rewards.", "Arrows + diagonals move/climb, Space = jump."],
+    ms_pacman: ["Eat all the dots and fruit while avoiding four ghosts; power pellets let you eat them.", "Arrows move. No fire — movement only."],
+    name_this_game: ["Underwater: fend off a shark and octopus while pumping oxygen and shooting.", "Left/Right move, Space = fire."],
+    phoenix: ["Shoot waves of alien birds and a mothership; use your shield when overwhelmed.", "Left/Right move, Space = fire, Down = shield."],
+    pitfall: ["Your goal is to maximize your points by collecting all 32 treasures before the 20-minute timer runs out, while minimizing point losses.", "Arrows move, Space = jump. Left/Right also runs."],
+    pong: ["Classic table tennis: get the ball past the CPU paddle. First to 21.", "Up/Down move your paddle (the right one)."],
+    private_eye: ["You drive a jumping car through a city maze to solve five distinct crime cases before time runs out. You must locate specific stolen items by interrogating window-peeking suspects, though you can only carry one item at a time. Once all items are returned to their correct businesses, you must capture the villainnand deliver him to the police station to win.", "Arrows move, Space = interact. Sparse rewards."],
+    qbert: ["Hop on every cube to change its colour, avoiding enemies that chase you off the pyramid.", "Arrows = the four diagonal hops (up-right, up-left, down-right, down-left)."],
+    riverraid: ["Fly up a river shooting enemies and refuelling; don't crash into banks or run dry.", "Arrows steer/throttle, Space = fire."],
+    road_runner: ["Run as the Road Runner eating seed and dodging Coyote, trucks and traps.", "Arrows + diagonals move, Space = action."],
+    robotank: ["First-person tank: destroy enemy squadrons across conditions while managing damage.", "Arrows drive/aim, Space = fire."],
+    seaquest: ["Dive a sub rescuing divers and shooting sharks/subs; surface for air before oxygen runs out.", "Arrows + diagonals move, Space = fire."],
+    skiing: ["Ski downhill through the gates as fast as possible (lowest time wins).", "Left/Right steer."],
+    solaris: ["Space combat/exploration across a star map, dogfighting and landing to defend planets.", "Arrows fly, Space = fire."],
+    space_invaders: ["Shoot the descending rows of aliens from your cannon before they land; hide behind shields.", "Left/Right move, Space = fire."],
+    star_gunner: ["Fly and shoot waves of enemies over a scrolling landscape.", "Arrows fly, Space = fire."],
+    surround: ["Snake-like duel: leave a trail and force the CPU to crash before you do.", "Arrows change direction. Don't hit trails or walls."],
+    tennis: ["Win points against the CPU by returning the ball where they can't reach.", "Arrows move, Space = swing."],
+    time_pilot: ["Dogfight through eras; shoot enemies coming from all directions and the boss to advance.", "Arrows steer (360°), Space = fire."],
+    tutankham: ["Explore a tomb maze shooting enemies and grabbing treasure; find keys to unlock exits.", "Arrows move, Space = fire left/right, Up = flash bomb."],
+    up_n_down: ["Drive a dune buggy along hilly tracks, jumping on enemies and collecting flags.", "Up = accelerate, Down = brake/reverse, Space = jump."],
+    venture: ["Explore dungeon rooms as Winky, shooting monsters and grabbing treasure; avoid the Hall Monsters.", "Arrows + diagonals move, Space = shoot arrows."],
+    video_pinball: ["Classic pinball: keep the ball alive and rack up points with the flippers.", "Down = pull plunger, Space = launch/flippers, Left/Right = nudge/flippers."],
+    wizard_of_wor: ["Move through a monster dungeon shooting Worlings and the Wizard; watch the radar.", "Arrows + diagonals move, Space = fire."],
+    yars_revenge: ["Chew/shoot through the shield to fire your cannon at Qotile, dodging the destroyer missile.", "Arrows fly, Space = fire."],
+    zaxxon: ["Fly an isometric fighter over a fortress, shooting targets and managing altitude/fuel.", "Arrows fly (mind your altitude shadow), Space = fire."],
+  };
+
+  const ALE_GAMES = [
+    "alien","amidar","assault","asterix","asteroids","atlantis","bank_heist",
+    "battle_zone","beam_rider","berzerk","bowling","boxing","breakout","centipede",
+    "chopper_command","crazy_climber","defender","demon_attack","double_dunk","enduro",
+    "fishing_derby","freeway","frostbite","gopher","gravitar","hero","ice_hockey",
+    "jamesbond","kangaroo","krull","kung_fu_master","montezuma_revenge","ms_pacman",
+    "name_this_game","phoenix","pitfall","pong","private_eye","qbert","riverraid",
+    "road_runner","robotank","seaquest","skiing","solaris","space_invaders",
+    "star_gunner","surround","tennis","time_pilot","tutankham","up_n_down","venture",
+    "video_pinball","wizard_of_wor","yars_revenge","zaxxon"
+  ];
+  const sel = $("gameSelect");
+  const label = g => g.replace(/_/g," ").replace(/\b\w/g, c=>c.toUpperCase());
+  ALE_GAMES.forEach(g => {
+    const o = document.createElement("option");
+    const tag = window.PADDLE_GAMES[g] ? "  (paddle)" : ""; o.value = g; o.textContent = label(g) + tag; if (g===GAME) o.selected=true;
+    sel.appendChild(o);
+  });
+  if (!ALE_GAMES.includes(GAME)) {
+    const o = document.createElement("option");
+    o.value=GAME; o.textContent=GAME+" (custom)"; o.selected=true;
+    sel.insertBefore(o, sel.firstChild);
+  }
+  // Populate the how-to-play panel for the current game. Guarded so a missing
+  // element or entry can never blank the rest of the UI.
+  try {
+    const info = (typeof GAME_INFO !== "undefined") ? GAME_INFO[GAME] : null;
+    const set = (id, txt) => { const el = $(id); if (el) el.textContent = txt; };
+    set("giName", label(GAME));
+    set("giTag", window.PADDLE_GAMES[GAME] ? "paddle game" : "");
+    set("giGoal", info ? info[0] : "");
+    set("giControlsTxt", info ? info[1] : "Arrows move, Space = fire.");
+  } catch (e) { /* non-fatal: panel stays blank, recorder still works */ }
+  // annotate dropdown: check which ROMs are actually present on the server,
+  // and mark missing ones so users know what to copy from ale_py.
+  fetch("game_config.json").then(r=>r.ok?r.json():null).then(cfg=>{
+    if (!cfg) return;
+    for (const o of sel.options) {
+      const e = cfg[o.value];
+      if (e) o.textContent = label(o.value)+(e.status==="verified"?"  ✓":"  •");
+    }
+    // Unified lives source: the config's lives byte overrides the fallback, so
+    // the browser auto-stop agrees with the pipeline's terminal definition.
+    const e = cfg[GAME];
+    // Unified terminal source from game_config.json:
+    //  - "byte": lives byte -> 0 (17 games)
+    //  - "terminal_value": a byte equals a constant only at game over (11 games,
+    //    each validated to never take that value during play)
+    if (e && e.lives) {
+      const lm = e.lives.mode;
+      livesByte    = (lm === "byte") ? e.lives.byte : null;
+      terminalByte = (lm === "terminal_value") ? e.lives.byte : null;
+      terminalValue= (lm === "terminal_value") ? e.lives.value : null;
+      terminalNeedsNonzero = (lm === "terminal_value") ? !!e.lives.require_nonzero_first : false;
+    }
+  }).catch(()=>{});
+  // Check ROM presence for each game and grey out missing ones
+  Promise.all(Array.from(sel.options).map(o =>
+    fetch(window.ROM_DIR+"/"+o.value+".bin",{method:"HEAD"})
+      .then(r=>({game:o.value, ok:r.ok})).catch(()=>({game:o.value, ok:false}))
+  )).then(results=>{
+    const missing = results.filter(r=>!r.ok).map(r=>r.game);
+    for (const o of sel.options) {
+      if (missing.includes(o.value)) {
+        o.style.color="var(--dim)";
+        o.textContent += "  (no ROM)";
+      }
+    }
+    if (missing.includes(GAME)) {
+      bannerEl.innerHTML="<span style='color:var(--gold)'>ROM missing: copy <b>"+GAME+
+        ".bin</b> from ale_py into <b>"+window.ROM_DIR+"/</b></span>";
+    }
+  });
+
+  if (GAME==="pong")
+    $("ctrlHint").innerHTML = "Move your <b>right</b> paddle with <kbd>↑</kbd>/<kbd>↓</kbd> (or <kbd>←</kbd>/<kbd>→</kbd>). <kbd>Space</kbd> to serve.";
+  else if (GAME==="breakout")
+    $("ctrlHint").innerHTML = "Move the paddle with <kbd>←</kbd>/<kbd>→</kbd>. <kbd>Space</kbd> to launch.";
+
+  // ── RAM ────────────────────────────────────────────────────────────────
+  let ramRef = null;
+  function resolveRAM() {
+    if (ramRef) return ramRef;
+    const r = Javatari.room.console.tia.eval("bus.getRam().getBytes()");
+    if (r && r.length===128) ramRef = r;
+    return ramRef;
+  }
+
+  // ── Action mapping (18-action ALE space) ──────────────────────────────
+  // For paddle games we track the POSITION we're writing each frame and convert
+  // it to a LEFT/RIGHT/NOOP action for the CSV (matching ALE's action space).
+  // For joystick games we use the standard 8-directional + fire mapping.
+  const KEYCODE = { ArrowLeft:37, ArrowUp:38, ArrowRight:39, ArrowDown:40, Space:32 };
+  const OPPOSITE = { ArrowLeft:"ArrowRight", ArrowRight:"ArrowLeft",
+                     ArrowUp:"ArrowDown",    ArrowDown:"ArrowUp" };
+  const phys = { ArrowLeft:false, ArrowRight:false, ArrowUp:false, ArrowDown:false, Space:false };
+  let lastH = null, lastV = null;
+
+  // For joystick games, we still need to forward keys to Javatari's screen
+  // element (bubble-phase listener on #jt-screen-fs) so input doesn't depend
+  // on canvas focus. For paddle games we skip this — we drive the pot directly
+  // and never want Javatari's key→JOY handler touching our paddle.
+  function jtTarget() {
+    return document.querySelector("#javatari-screen canvas")
+        || document.getElementById("jt-screen-fs")
+        || document.getElementById("javatari-screen")
+        || document;
+  }
+  function synthKey(type, code) {
+    const kc = KEYCODE[code];
+    const ev = new KeyboardEvent(type, {
+      key: code==="Space" ? " " : code, code, bubbles:true, cancelable:true });
+    Object.defineProperty(ev,"keyCode",  {get:()=>kc});
+    Object.defineProperty(ev,"which",    {get:()=>kc});
+    Object.defineProperty(ev,"location", {get:()=>0});
+    ev.__synthetic = true;
+    try { jtTarget().dispatchEvent(ev); } catch(e){}
+  }
+
+  window.addEventListener("keydown", e => onKey(e, true),  true);
+  window.addEventListener("keyup",   e => onKey(e, false), true);
+
+  function onKey(e, down) {
+    if (e.__synthetic) return;
+    const c = e.code;
+    if (!(c in phys)) return;
+    if (e.preventDefault) e.preventDefault();
+    phys[c] = down;
+
+    if (isPaddle) {
+      // Paddle games: block the ARROW keys from reaching Javatari's listener
+      // on #jt-screen-fs (they'd hit tryPaddleControl -> speed-OSD/wrong-paddle
+      // bugs). We drive the pot directly in the frame clock instead.
+      // BUT Space (FIRE) must still reach Javatari — e.g. Breakout launches the
+      // ball with FIRE, Pong serve. Space is not a paddle direction, so it's
+      // safe to forward and doesn't trigger any paddle bug.
+      if (c === "Space") {
+        synthKey(down ? "keydown" : "keyup", "Space");   // forward FIRE to emulator
+      } else if (e.stopPropagation) {
+        e.stopPropagation();                              // block arrows from Javatari
+      }
+      return;
+    }
+
+    // Joystick game: forward key to Javatari's screen element directly so
+    // Javatari receives it regardless of which element has DOM focus.
+    // Skip synthKey for direct-joy games — the frame-pulse socket loop handles
+    // all their input, and forwarding via synthKey too causes double-assertion
+    // conflicts (e.g. Space sent via synthKey then re-asserted via socket causes
+    // a button-up/down cycle that cancels the shot).
+    if (!isDirectJoy) {
+      synthKey(down ? "keydown" : "keyup", c);
+    }
+    // last-input-priority: release the stale opposite direction so Javatari
+    // doesn't freeze when both are briefly held during a direction reversal.
+    if (c !== "Space") {
+      const opp = OPPOSITE[c];
+      const pair = (c==="ArrowLeft"||c==="ArrowRight") ? "H" : "V";
+      if (down) {
+        if (pair==="H") lastH=c; else lastV=c;
+        if (phys[opp] && !isDirectJoy) synthKey("keyup", opp);
+      } else {
+        if (phys[opp]) {
+          if (pair==="H") lastH=opp; else lastV=opp;
+          if (!isDirectJoy) synthKey("keydown", opp);
+        } else {
+          if (pair==="H") lastH=null; else lastV=null;
+        }
+      }
+    }
+  }
+
+  // effective key state (post last-input-priority)
+  function eff() {
+    const L=phys.ArrowLeft, R=phys.ArrowRight, U=phys.ArrowUp, D=phys.ArrowDown;
+    return {
+      left:  L && (!R || lastH==="ArrowLeft"),
+      right: R && (!L || lastH==="ArrowRight"),
+      up:    U && (!D || lastV==="ArrowUp"),
+      down:  D && (!U || lastV==="ArrowDown"),
+      fire:  phys.Space,
+    };
+  }
+
+  const BASE = {NONE:0,UP:2,RIGHT:3,LEFT:4,DOWN:5,UPRIGHT:6,UPLEFT:7,DOWNRIGHT:8,DOWNLEFT:9};
+  const FIRE = {NONE:1,UP:10,RIGHT:11,LEFT:12,DOWN:13,UPRIGHT:14,UPLEFT:15,DOWNRIGHT:16,DOWNLEFT:17};
+
+  // For paddle games: convert held direction to ALE action integer, matched to
+  // ALE ground truth by the direction the PADDLE BYTE actually moves:
+  //   Breakout: ALE action 3 moves ram[72] up(+), action 4 moves it down(-)
+  //   Pong:     ALE action 2 moves ram[51] up-screen, action 5 down
+  // movingPos = the key that drives the pot in the +intent direction.
+  function paddleAction(movingPos, movingNeg, fire) {
+    if (GAME === "breakout") {
+      if (fire) return movingPos ? 11 : movingNeg ? 12 : 1;
+      return movingPos ? 3 : movingNeg ? 4 : 0;
+    }
+    // Pong: UP=2, DOWN=5, UPFIRE=10, DOWNFIRE=13, FIRE=1, NOOP=0
+    if (fire) return movingPos ? 10 : movingNeg ? 13 : 1;
+    return movingPos ? 2 : movingNeg ? 5 : 0;
+  }
+
+  function joystickAction() {
+    const k=eff(); let dir="NONE";
+    if (k.up&&k.right) dir="UPRIGHT"; else if (k.up&&k.left) dir="UPLEFT";
+    else if (k.down&&k.right) dir="DOWNRIGHT"; else if (k.down&&k.left) dir="DOWNLEFT";
+    else if (k.up) dir="UP"; else if (k.down) dir="DOWN";
+    else if (k.left) dir="LEFT"; else if (k.right) dir="RIGHT";
+    // For fire-only games (e.g. Atlantis), direction without fire is meaningless
+    // — there's no player movement, only gun selection. Log bare arrows as NOOP.
+    if (FIRE_ONLY_GAMES.has(GAME) && !k.fire) return 0;
+    return k.fire ? FIRE[dir] : BASE[dir];
+  }
+
+  // ── Paddle: direct pot driver ──────────────────────────────────────────
+  // We patch videoClockPulse to write PADDLE*_POSITION every frame based on
+  // held keys. This bypasses Javatari's entire JOY0/JOY1 key→paddle chain,
+  // which has two bugs for Pong: (a) arrows map to JOY0 = the wrong player,
+  // (b) JOY0_UP/DOWN adjust "paddle speed" instead of moving anything.
+  let paddlePos = 190; // start at centre (190 = mid of 0-380 range)
+  let paddleSocket = null;
+
+  function getPaddleSocket() {
+    if (paddleSocket) return paddleSocket;
+    try { paddleSocket = Javatari.room.console.getConsoleControlsSocket(); } catch(e){}
+    return paddleSocket;
+  }
+
+  // Returns true if movingUp, false if movingDown, null if neither.
+  // For Pong right-paddle: ↑/← = up (pos increases toward 380 = top of screen).
+  // For Breakout: ←/↑ = move paddle left (pos increases = left).
+  // Both map to "UP" direction from the player's perspective.
+  function paddleDirection() {
+    const k = eff();
+    // movingPos (+1) is the intent that paddleAction logs as the game's first
+    // paddle action (Breakout action 3 = paddle right; Pong action 2 = up) and,
+    // via cfg.invertPot, drives the pot so the paddle physically moves that way.
+    // We therefore bind movingPos to the key whose on-screen direction matches:
+    //   Breakout: RIGHT key -> +1 (paddle right), LEFT key -> -1
+    //   Pong:     UP/LEFT   -> +1 (paddle up),    DOWN/RIGHT -> -1
+    let pos, neg;
+    if (GAME === "breakout") {
+      pos = k.right;                 // right key -> action 3 -> paddle right
+      neg = k.left;                  // left key  -> action 4 -> paddle left
+    } else {                         // pong and other vertical paddles
+      pos = k.up || k.left;
+      neg = k.down || k.right;
+    }
+    if (pos && !neg) return  1;
+    if (neg && !pos) return -1;
+    return 0;
+  }
+
+  // Patch installed on arm(); removed on finish().
+  let paddlePulseOrig = null;
+  function installPaddlePatch() {
+    const con = Javatari.room.console;
+    const sock = getPaddleSocket();
+    if (!sock || !cfg) return;
+    const SOCKET_KEY = cfg.paddleSocket;   // PADDLE0_POSITION or PADDLE1_POSITION
+    const STEP = cfg.step;
+    const POT_MIN = cfg.potMin, POT_MAX = cfg.potMax;
+    const POT_SIGN = cfg.invertPot ? -1 : 1;   // screen direction vs player intent
+    paddlePos = 190;                       // reset to centre each arm
+    paddlePulseOrig = con.videoClockPulse;
+    con.videoClockPulse = function() {
+      const dir = paddleDirection();       // +1 = up intent, -1 = down intent
+      if (dir !== 0) {
+        paddlePos = Math.max(POT_MIN, Math.min(POT_MAX, paddlePos + dir * POT_SIGN * STEP));
+      }
+      // Write every frame (not just on keypress) so our value overrides
+      // Javatari's own internal pot driver which otherwise wins each tick.
+      sock.controlValueChanged(SOCKET_KEY, paddlePos);
+      paddlePulseOrig.apply(this, arguments);
+    };
+  }
+  function removePaddlePatch() {
+    if (!paddlePulseOrig) return;
+    try { Javatari.room.console.videoClockPulse = paddlePulseOrig; } catch(e){}
+    paddlePulseOrig = null;
+  }
+
+  // ── Recording state machine ────────────────────────────────────────────
+  const MAX_FRAMES = 90000;
+  const START_STREAK=4, START_CHANGE=2;
+  const STOP_STATIC_FRAMES=120, STOP_CHANGE=1;
+  // Games where the "day/game over" screen has low but non-zero RAM activity.
+  // Map of game -> max bytes-changing threshold that reliably indicates end-state.
+  // Validated: Enduro active play = 15-35 changes/frame; day-over screen = 4-6.
+  const LOW_ACTIVITY_GAMES={"enduro":8};
+
+  // Per-game LIVES byte (ALE address & 0x7F), extracted from ALE source.
+  // When present, recording stops the moment lives reaches 0 — matching the
+  // agent's terminal state exactly. Games not listed fall back to the generic
+  // stillness detector below (their ALE terminal logic is score/timer-based
+  // and game-specific, so we don't hard-code it here).
+  // Single source of truth for the lives byte is game_config.json (seeded by
+  // seed_config.py from ALE source, and filled/kept by discover_bytes). We read
+  // it from the config fetched below. This built-in table is only a FALLBACK
+  // for when game_config.json isn't being served, so the two can't silently
+  // disagree once the config is present.
+  const LIVES_BYTE_FALLBACK = {
+    alien:64, assault:101, atlantis:113, bank_heist:85, battle_zone:58,
+    centipede:109, chopper_command:100, crazy_climber:42, defender:66,
+    gravitar:4, hero:51, name_this_game:71, phoenix:75, seaquest:59,
+    space_invaders:73,
+  };
+  // Mutable: set from game_config.json when it loads (see the fetch below);
+  // starts from the fallback so auto-stop works even before/without the config.
+  let livesByte = (LIVES_BYTE_FALLBACK[GAME] !== undefined) ? LIVES_BYTE_FALLBACK[GAME] : null;
+  let terminalByte = null, terminalValue = null;   // for "terminal_value" games
+  let terminalNeedsNonzero = false;                 // require a non-marker value first
+  let sawNonMarker = false;                          // has the byte ever been != marker?
+  let termStreak = 0;                               // frames the marker has held
+  // Frames lives must stay at 0 before we call it game-over (avoids stopping
+  // during a brief mid-life respawn flicker).
+  const STOP_LIVES_FRAMES = 30;
+
+  let state="idle", origPulse=null;
+  let recRam=null, recAct=null, recTs=null, recN=0, recStart=0;
+  const prevRam = new Uint8Array(128);
+  let activityStreak=0, staticStreak=0, uiTimer=null, armReadyAt=0, livesStreak=0, sawLives=false;
+
+  function setStatus(cls,txt,sub) {
+    statusCard.className="status "+cls;
+    statusTxt.textContent=txt; statusSub.textContent=sub;
+  }
+
+  function arm() {
+    const ram = resolveRAM();
+    if (!ram) { bannerEl.textContent="Click the game screen and wait for it to load."; return; }
+    const con = Javatari.room.console;
+    origPulse = con.videoClockPulse;
+    if (typeof origPulse !== "function") { bannerEl.textContent="Emulator not ready yet."; return; }
+
+    // Pulse RESET so the ROM exits its attract/demo screen and starts a fresh
+    // game — needed for ALL games (joystick and paddle), e.g. Video Pinball
+    // won't launch a ball until the game is actually started. Done via the
+    // socket so it's focus-independent (no need to click the screen). We delay
+    // arming briefly so the reset's own RAM burst isn't mistaken for gameplay.
+    let armDelay = 0;
+    const sock = getPaddleSocket();   // console controls socket (all games)
+    if (sock) {
+      sock.controlStateChanged(jt.ConsoleControls.RESET, true);
+      setTimeout(() => sock.controlStateChanged(jt.ConsoleControls.RESET, false), 120);
+      armDelay = 400;
+      if (isPaddle) {                 // paddle games also re-centre the pot
+        paddlePos = 190;
+        sock.controlValueChanged(cfg.paddleSocket, 190);
+      }
+    }
+    // Focus the emulator screen so keyboard input is guaranteed to reach it
+    // even though we also forward keys programmatically (belt and suspenders).
+    (document.getElementById("jt-screen-fs")
+      || document.querySelector("#javatari-screen canvas"))?.focus();
+
+    recRam = new Uint8Array(MAX_FRAMES*128);
+    recAct = new Uint8Array(MAX_FRAMES);
+    recTs  = new Float64Array(MAX_FRAMES);
+    recN=0; activityStreak=0; staticStreak=0; livesStreak=0; sawLives=false; termStreak=0; sawNonMarker=false;
+    for (let i=0;i<128;i++) prevRam[i]=ram[i];
+    state="armed"; bannerEl.textContent="";
+    armReadyAt = performance.now() + armDelay;   // ignore motion until reset settles
+
+    // For paddle games: install the direct pot driver BEFORE wrapping
+    // videoClockPulse for recording, so the chain is:
+    //   our recording wrapper → paddle driver → original Javatari pulse
+    if (isPaddle) installPaddlePatch();
+
+    // Capture the (possibly paddle-patched) pulse as our inner function
+    const innerPulse = con.videoClockPulse;
+    // Pre-compute the socket reference once for direct-joy games.
+    const djSock = isDirectJoy ? Javatari.room.console.getConsoleControlsSocket() : null;
+    const djCC   = isDirectJoy ? jt.ConsoleControls : null;
+
+    con.videoClockPulse = function() {
+      // Push joystick state directly for games where synthKey combos don't work.
+      // We assert directional states every frame so combined inputs are always
+      // current. For the fire button we only ASSERT true (never force false here)
+      // so we don't race with Javatari's own keydown/keyup handling of Space.
+      if (djSock) {
+        const k=eff();
+        djSock.controlStateChanged(djCC.JOY0_UP,    k.up);
+        djSock.controlStateChanged(djCC.JOY0_DOWN,  k.down);
+        djSock.controlStateChanged(djCC.JOY0_LEFT,  k.left);
+        djSock.controlStateChanged(djCC.JOY0_RIGHT, k.right);
+        // Re-assert fire whenever a direction is held, so Space+Arrow works
+        // regardless of which key was pressed first.
+        if (k.fire) djSock.controlStateChanged(djCC.JOY0_BUTTON, true);
+        else if (!k.fire) djSock.controlStateChanged(djCC.JOY0_BUTTON, false);
+      }
+      let changed=0;
+      for (let i=0;i<128;i++) if (ram[i]!==prevRam[i]) changed++;
+
+      if (state==="armed" && performance.now() >= armReadyAt) {
+        activityStreak = (changed>=START_CHANGE) ? activityStreak+1 : 0;
+        if (activityStreak>=START_STREAK) {
+          state="recording"; recStart=performance.now(); recN=0; staticStreak=0;
+        }
+      }
+      if (state==="recording") {
+        if (recN<MAX_FRAMES) {
+          const b=recN*128;
+          for (let i=0;i<128;i++) recRam[b+i]=ram[i];
+          // Action: for paddle games derive from the pot direction, for joystick
+          // use the standard 8-directional mapping.
+          if (isPaddle) {
+            const dir=paddleDirection(), fire=phys.Space;
+            recAct[recN] = paddleAction(dir===1, dir===-1, fire);
+          } else {
+            recAct[recN] = joystickAction();
+          }
+          recTs[recN]=performance.now()-recStart;
+          recN++;
+        }
+        // Terminal detection. Preferred: lives byte hits 0 (exact, matches the
+        // agent's episode end). Fallback: sustained RAM stillness. Both cap at
+        // MAX_FRAMES. Only start watching lives once play is underway (lives has
+        // been >0 during this take) so a 0 on the pre-serve frame doesn't fire.
+        let gameOver = false;
+        if (livesByte !== null) {
+          const lv = ram[livesByte];
+          if (lv > 0) sawLives = true;
+          livesStreak = (sawLives && lv === 0) ? livesStreak + 1 : 0;
+          if (livesStreak >= STOP_LIVES_FRAMES) gameOver = true;
+        } else if (terminalByte !== null) {
+          // Constant-value terminal: the marker byte equals terminalValue only at
+          // game over (validated to never occur mid-play). For games where the
+          // marker value also shows on the pre-game attract screen (e.g. Asterix
+          // byte83==0), require the byte to be a NON-marker value first, so the
+          // start screen can't trigger an immediate stop.
+          const atMarker = ram[terminalByte] === terminalValue;
+          if (!atMarker) sawNonMarker = true;
+          const armed = !terminalNeedsNonzero || sawNonMarker;
+          termStreak = (armed && atMarker) ? termStreak + 1 : 0;
+          if (termStreak >= STOP_LIVES_FRAMES) gameOver = true;
+        }
+        // Stillness fallback ONLY for games with NO terminal signal at all.
+        const hasTerminal = (livesByte !== null) || (terminalByte !== null);
+        const stopChange = LOW_ACTIVITY_GAMES[GAME] !== undefined ? LOW_ACTIVITY_GAMES[GAME] : STOP_CHANGE;
+        staticStreak=(changed<=stopChange)?staticStreak+1:0;
+        const stillStop = !hasTerminal && (staticStreak >= STOP_STATIC_FRAMES);
+        if (gameOver || stillStop || recN>=MAX_FRAMES) {
+          innerPulse.apply(this,arguments);
+          finish(gameOver ? "gameover" : "auto"); return;
+        }
+      }
+      for (let i=0;i<128;i++) prevRam[i]=ram[i];
+      innerPulse.apply(this,arguments);
+    };
+
+    primaryBtn.textContent="Cancel"; primaryBtn.className="btn btn-ghost"; primaryBtn.blur();
+    downloadBtn.disabled=true; diagBtn.disabled=true;
+    setStatus("armed","Armed — waiting for play","Start playing; recording begins when the ball moves.");
+    clearInterval(uiTimer);
+    uiTimer=setInterval(tick,100);
+  }
+
+  function tick() {
+    if (state==="recording") {
+      const s=(performance.now()-recStart)/1000;
+      setStatus("rec","● Recording",recN+" frames · "+s.toFixed(1)+" s");
+      primaryBtn.textContent="Stop"; primaryBtn.className="btn btn-stop"; primaryBtn.blur();
+    }
+  }
+
+  function finish(reason) {
+    if (state!=="armed"&&state!=="recording") return;
+    const wasRecording = state==="recording";
+    // Restore original pulse (removes both recording wrapper and paddle patch)
+    Javatari.room.console.videoClockPulse = origPulse;
+    removePaddlePatch();
+    clearInterval(uiTimer);
+    state="stopped";
+    primaryBtn.textContent="New recording"; primaryBtn.className="btn btn-primary"; primaryBtn.blur();
+    diagBtn.disabled=false;
+
+    if (!wasRecording||recN===0) {
+      setStatus("ready","Cancelled","No play detected — nothing captured.");
+      recoutEl.textContent="No frames recorded."; downloadBtn.disabled=true; return;
+    }
+    let changed=0;
+    for (let b=0;b<128;b++) {
+      const f0=recRam[b];
+      for (let f=1;f<recN;f++) if (recRam[f*128+b]!==f0){changed++;break;}
+    }
+    const acts=new Set(); for (let f=0;f<recN;f++) acts.add(recAct[f]);
+    const dur=recN?recTs[recN-1]/1000:0;
+    const noInput=acts.size<=1&&acts.has(0);
+    setStatus("done","Take saved · "+recN+" frames",
+      (reason==="gameover"?"Stopped at game over (lives=0). ":reason==="auto"?"Auto-stopped (screen idle). ":" ")+"Download when ready.");
+    recoutEl.innerHTML=
+      "frames        : "+recN+"\n"+
+      "duration      : "+dur.toFixed(1)+" s  ("+(recN/Math.max(dur,1e-9)).toFixed(1)+" Hz)\n"+
+      "RAM live bytes : "+changed+" / 128 "+(changed>5?"<span class='ok'>OK</span>":"<span class='bad'>low</span>")+"\n"+
+      "actions used  : "+acts.size+"  ["+[...acts].sort((a,b)=>a-b).join(", ")+"]"+
+      (noInput?"  <span class='bad'>⚠ NO INPUT CAPTURED — discard this take</span>":"");
+    downloadBtn.disabled=noInput;
+  }
+
+  function onPrimary() {
+    if (state==="idle"||state==="stopped") arm();
+    else finish("manual");
+  }
+
+  // ── Save folder ────────────────────────────────────────────────────────
+  const DATA_FOLDER = "human_data_files";   // all sessions go here
+  let dirHandle=null;       // the parent folder the user picks
+  let dataHandle=null;      // the human_data_files subfolder inside it (auto-created)
+  const fsSupported = typeof window.showDirectoryPicker==="function";
+  if (!fsSupported) {
+    const b=$("folderBtn"); b.disabled=true; b.style.opacity=".45"; b.style.cursor="not-allowed";
+    b.title="Needs Chrome or Edge; other browsers save to Downloads/"+DATA_FOLDER+".";
+  }
+  async function chooseFolder() {
+    if (!fsSupported) return;
+    try {
+      dirHandle=await window.showDirectoryPicker({mode:"readwrite"});
+      // Create (or reuse) the human_data_files subfolder inside the picked folder,
+      // so every session lands in <picked>/human_data_files/ regardless of where
+      // the user pointed the picker.
+      dataHandle=await dirHandle.getDirectoryHandle(DATA_FOLDER,{create:true});
+      $("folderName").textContent=dirHandle.name+"/"+DATA_FOLDER+"/";
+      $("folderName").style.color="var(--teal)";
+    } catch(e){ dataHandle=null; }
+  }
+  async function ensureWritable() {
+    if (!dataHandle) return false;
+    const opts={mode:"readwrite"};
+    if ((await dataHandle.queryPermission(opts))==="granted") return true;
+    return (await dataHandle.requestPermission(opts))==="granted";
+  }
+
+  // ── CSV export ─────────────────────────────────────────────────────────
+  async function downloadSession() {
+    if (!recN) return;
+    const pid=($("participant").value||"").trim();
+    const head=["frame","t_ms","action"].concat(Array.from({length:128},(_,i)=>"ram_"+i)).join(",");
+    const meta=[
+      "# atari-spike human session","# game="+GAME,"# rom="+ROM,
+      "# recorded_utc="+new Date().toISOString(),"# participant="+pid,
+      "# fps_target=60","# action_space=ALE_full_18",
+      "# ram_field=pre_state (RAM at start of frame, before action applied)",
+      "# paddle_control=direct_pot (PADDLE"+(cfg?cfg.paddleSocket===16896?"1":"0":"N/A")+
+        "_POSITION written each frame; keys never forwarded to Javatari JOY layer)",
+      "# capture=auto_start_on_motion","# frames="+recN,
+    ];
+    const lines=meta.concat(head);
+    for (let f=0;f<recN;f++) {
+      const b=f*128, row=new Array(131);
+      row[0]=f; row[1]=recTs[f].toFixed(2); row[2]=recAct[f];
+      for (let i=0;i<128;i++) row[3+i]=recRam[b+i];
+      lines.push(row.join(","));
+    }
+    const blob=new Blob([lines.join("\n")],{type:"text/csv"});
+    const stamp=new Date().toISOString().replace(/[:.]/g,"-");
+    const pidClean=pid.replace(/[^A-Za-z0-9_-]/g,"");
+    const fname="human_session_"+GAME+(pidClean?"_"+pidClean:"")+"_"+stamp+".csv";
+    if (await ensureWritable()) {
+      try {
+        const fh=await dataHandle.getFileHandle(fname,{create:true});
+        const w=await fh.createWritable(); await w.write(blob); await w.close();
+        statusSub.textContent="Saved to "+dirHandle.name+"/"+DATA_FOLDER+"/"+fname; return;
+      } catch(e){}
+    }
+    // Fallback (no folder picked / unsupported browser): normal download.
+    // Prefix the folder name so it's easy to sort into human_data_files later.
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+    a.download=fname; a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // ── Live monitor ───────────────────────────────────────────────────────
+  setInterval(()=>{
+    let a;
+    if (isPaddle) {
+      const dir=paddleDirection(), fire=phys.Space;
+      a=paddleAction(dir===1,dir===-1,fire);
+      const k=eff(), p=[];
+      if (k.up||k.left) p.push("▲"); if (k.down||k.right) p.push("▼");
+      if (fire) p.push("FIRE");
+      $("monKeys").textContent=p.length?p.join(" "):"(no keys)";
+    } else {
+      a=joystickAction();
+      const k=eff(), p=[];
+      if (k.left) p.push("◄"); if (k.right) p.push("►");
+      if (k.up) p.push("▲"); if (k.down) p.push("▼"); if (k.fire) p.push("FIRE");
+      const both=(phys.ArrowLeft&&phys.ArrowRight)||(phys.ArrowUp&&phys.ArrowDown);
+      $("monKeys").textContent=(p.length?p.join(" "):"(no keys)")+(both?"  ⇄":"");
+    }
+    const el=$("monAct");
+    el.textContent="action "+a; el.className="act"+(a!==0?" on":"");
+  },80);
+
+  // ── Diagnostics ────────────────────────────────────────────────────────
+  function sampleRAM() {
+    try {
+      const arr=Array.from(resolveRAM());
+      outEl.textContent="length "+arr.length+" · checksum "+arr.reduce((a,b)=>a+b,0)+
+        "\nfirst 16: ["+arr.slice(0,16).join(", ")+"]"+
+        (isPaddle?"\npaddle byte ram["+cfg.paddleByte+"]: "+arr[cfg.paddleByte]:"");
+    } catch(e) { outEl.textContent="Error: "+e.message; }
+  }
+  function diagnostic(target) {
+    if (state==="armed"||state==="recording") { outEl.textContent="Finish recording first."; return; }
+    const ram=resolveRAM(); if (!ram) { outEl.textContent="RAM not ready."; return; }
+    const con=Javatari.room.console, orig=con.videoClockPulse;
+    const pre=new Uint8Array(target*128), fts=new Float32Array(target);
+    let n=0, lastTS=performance.now();
+    diagBtn.disabled=true; primaryBtn.disabled=true;
+    outEl.textContent="Sampling "+target+" frames…";
+    con.videoClockPulse=function(){
+      const base=n*128; for (let i=0;i<128;i++) pre[base+i]=ram[i];
+      orig.apply(this,arguments);
+      const ts=performance.now(); fts[n]=ts-lastTS; lastTS=ts;
+      if (++n>=target) {
+        con.videoClockPulse=orig; diagBtn.disabled=false; primaryBtn.disabled=false;
+        let changed=0; for (let b=0;b<128;b++){const f0=pre[b]; for(let f=1;f<target;f++) if(pre[f*128+b]!==f0){changed++;break;}}
+        let sum=0,over=0; for (let i=0;i<target;i++){sum+=fts[i]; if(fts[i]>20)over++;}
+        const avg=sum/target;
+        outEl.innerHTML=
+          "RAM live bytes : "+changed+" / 128 "+(changed>5?"<span class='ok'>LIVE</span>":"<span class='bad'>low</span>")+"\n"+
+          "avg ms/frame  : "+avg.toFixed(2)+" ("+(1000/avg).toFixed(1)+" Hz) "+(Math.abs(avg-16.67)<2?"<span class='ok'>~60Hz</span>":"<span class='bad'>off</span>")+"\n"+
+          "frames >20ms  : "+over+" / "+target+(over===0?"  <span class='ok'>no stalls</span>":"");
+      }
+    };
+  }
+  // Agent's measured paddle byte-velocity (mean |Δram[51]| per frame while the
+  // action was held), recovered from ppo_agent_pong_30ep.csv:
+  //   action 2 (UP)   → ram[51] changes ≈ 10.05 / frame
+  //   action 5 (DOWN) → ram[51] changes ≈  6.11 / frame
+  // We tune cfg.step so the human paddle traverses at a comparable rate.
+  const AGENT_VEL = (GAME==="pong") ? { up:10.05, down:6.11 } : null;
+
+  function paddleEdgeTest(seconds) {
+    if (state==="armed"||state==="recording") { outEl.textContent="Finish recording first."; return; }
+    const ram=resolveRAM(); if (!ram) { outEl.textContent="RAM not ready."; return; }
+    if (!cfg||cfg.paddleByte==null) {
+      outEl.innerHTML="<span class='ok'>Not a paddle game with a known byte.</span>"; return;
+    }
+    const PB=cfg.paddleByte;
+    const con=Javatari.room.console, orig=con.videoClockPulse;
+    const total=Math.round(seconds*60);
+    const A=new Int8Array(total), P=new Uint8Array(total);   // A: +1 up, -1 down, 0 none
+    let n=0;
+    const btn=$("padBtn"); btn.disabled=true; primaryBtn.disabled=true;
+    outEl.textContent="Hold ↑ (up) for ~5 s, then hold ↓ (down) for ~5 s.\nKeep clear of the very top/bottom so it's mid-screen…";
+    con.videoClockPulse=function(){
+      if (n<total){ A[n]=paddleDirection(); P[n]=ram[PB]; n++; }
+      orig.apply(this,arguments);
+      if (n>=total) {
+        con.videoClockPulse=orig; btn.disabled=false; primaryBtn.disabled=false;
+        const lo=Math.min(...P.subarray(0,n)), hi=Math.max(...P.subarray(0,n));
+        // Measure mean |Δbyte| per frame, separately for up-held and down-held,
+        // excluding frames pinned near a wall (where the paddle can't move).
+        function vel(dirWanted) {
+          let mv=0, fr=0;
+          for (let f=0; f<n-1; f++) {
+            if (A[f]!==dirWanted) continue;
+            if (P[f]<=lo+8 || P[f]>=hi-8) continue;         // skip wall-pinned frames
+            const d=Math.abs(P[f+1]-P[f]);
+            if (d>0 && d<40) { mv+=d; fr++; }
+          }
+          return fr ? mv/fr : 0;
+        }
+        const vUp=vel(1), vDown=vel(-1);
+        const vMean=(vUp+vDown)/2;
+
+        let html =
+          "paddle byte     : "+PB+"   range seen "+lo+"–"+hi+"\n"+
+          "current step    : "+cfg.step+" pot-units/frame\n"+
+          "── human byte-velocity (this take) ──\n"+
+          "  holding ↑     : "+vUp.toFixed(2)+" byte/frame\n"+
+          "  holding ↓     : "+vDown.toFixed(2)+" byte/frame\n";
+
+        if (AGENT_VEL) {
+          const agentMean=(AGENT_VEL.up+AGENT_VEL.down)/2;
+          html +=
+            "── agent target (ppo_agent_pong_30ep) ──\n"+
+            "  action 2 (↑)  : "+AGENT_VEL.up.toFixed(2)+" byte/frame\n"+
+            "  action 5 (↓)  : "+AGENT_VEL.down.toFixed(2)+" byte/frame\n";
+          // Human pot-write is linear in step, so byte-velocity ≈ k·step.
+          // Recommend step that matches the agent's mean velocity.
+          if (vMean>0.1) {
+            const k = vMean / cfg.step;                 // byte per (pot-unit-step) per frame
+            const recStep = Math.max(1, Math.round(agentMean / k));
+            const ratio = vMean/agentMean;
+            const ok = ratio>=0.8 && ratio<=1.25;
+            html += "── verdict ──\n";
+            html += ok
+              ? "<span class='ok'>✓ within 25% of agent speed — good to collect.</span>"
+              : "<span class='bad'>speed mismatch ("+(ratio*100).toFixed(0)+"% of agent).</span> "+
+                "Set <b>step: "+recStep+"</b> in PADDLE_GAMES."+GAME+", reload, re-test.";
+          } else {
+            html += "<span class='bad'>No mid-screen motion measured — hold a direction longer, away from the walls.</span>";
+          }
+        }
+        outEl.innerHTML = html;
+      }
+    };
+  }
+
+  // ── Auto-select ALE game mode on load ──────────────────────────────────
+  // ALE sets mode by pulsing SELECT until the mode RAM byte equals aleMode,
+  // then soft-resets. modeRamByte is game-specific (Pong=22, Breakout=50).
+  function autoSelectMode(targetMode, modeRamByte, done) {
+    const ram=resolveRAM();
+    if (!ram||targetMode<0) { done(); return; }
+    const s=Javatari.room.console.getConsoleControlsSocket();
+    const C=jt.ConsoleControls;
+    let tries=0;
+    const MAX_TRIES=50; // safety: never loop forever
+    function step() {
+      if (ram[modeRamByte]===targetMode||tries>=MAX_TRIES) {
+        // Pulse RESET to apply the mode (matches ALE's softReset)
+        s.controlStateChanged(C.RESET,true);
+        setTimeout(()=>{ s.controlStateChanged(C.RESET,false); done(); },120);
+        return;
+      }
+      tries++;
+      s.controlStateChanged(C.SELECT,true);
+      setTimeout(()=>{ s.controlStateChanged(C.SELECT,false); setTimeout(step,220); },120);
+    }
+    step();
+  }
+
+  // ── Game switch ────────────────────────────────────────────────────────
+  function switchGame(g) {
+    if (g===GAME) return;
+    if (state==="armed"||state==="recording") { alert("Finish recording before switching games."); return; }
+    location.search="?game="+g;
+  }
+
+  // ── Startup ────────────────────────────────────────────────────────────
+  window.addEventListener("load",()=>{
+    fetch(ROM,{method:"HEAD"}).then(r=>{
+      if (!r.ok) bannerEl.innerHTML="<span style='color:var(--red)'>ROM not found: "+ROM+
+        " — put "+GAME+".bin in the "+window.ROM_DIR+"/ folder.</span>";
+    }).catch(()=>{});
+
+    setTimeout(()=>{
+      try {
+        const ram=resolveRAM(), el=$("ramStatus");
+        if (ram&&ram.length===128) { el.textContent="RAM ready"; el.style.color="var(--teal)"; }
+        else { el.textContent="RAM error"; el.style.color="var(--red)"; }
+      } catch(e) { $("ramStatus").textContent="RAM error"; }
+
+      // Focus the emulator screen on load so the first keypress reaches the
+      // game without the user having to click it first.
+      (document.getElementById("jt-screen-fs")
+        || document.querySelector("#javatari-screen canvas"))?.focus();
+
+      // Auto-select the ALE mode using the game-specific mode RAM byte
+      if (cfg&&cfg.aleMode>=0) {
+        bannerEl.textContent="Setting up game mode…";
+        autoSelectMode(cfg.aleMode, cfg.modeRamByte, ()=>{
+          bannerEl.textContent="";
+          // Centre the paddle after reset
+          const sock=getPaddleSocket();
+          if (sock&&cfg) {
+            paddlePos=190;
+            sock.controlValueChanged(cfg.paddleSocket,190);
+          }
+        });
+      }
+    },3000);
+  });
+
+  Object.assign(window,{switchGame,onPrimary,downloadSession,chooseFolder,sampleRAM,diagnostic,paddleEdgeTest});
+})();
+</script>
+</body>
+</html>

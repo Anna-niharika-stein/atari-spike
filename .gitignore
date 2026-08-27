@@ -1,0 +1,9 @@
+﻿raw_human_data_files/
+human_raw_test_data/
+agent_test_data/
+outputs/
+*.zip
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/

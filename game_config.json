@@ -1,0 +1,2518 @@
+{
+  "breakout": {
+    "game": "breakout",
+    "score_bytes": [
+      {
+        "byte": 77,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 57,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      3,
+      4
+    ],
+    "status": "verified",
+    "note": "100.0% reward match vs ALE (133 events)",
+    "agent_action_set": [
+      0,
+      1,
+      3,
+      4
+    ]
+  },
+  "pong": {
+    "game": "pong",
+    "score_bytes": [
+      {
+        "byte": 14,
+        "format": "binary",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 13,
+        "format": "binary",
+        "weight": -1,
+        "scale": 1
+      }
+    ],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      3,
+      4,
+      11,
+      12
+    ],
+    "status": "verified",
+    "note": "95.1% reward match vs ALE (40 events)",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "assault": {
+    "game": "assault",
+    "score_bytes": [
+      {
+        "byte": 2,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 1,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 101,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      11,
+      12
+    ],
+    "status": "verified",
+    "note": "100.0% reward match vs ALE (115 events)",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      11,
+      12
+    ]
+  },
+  "asterix": {
+    "game": "asterix",
+    "score_bytes": [
+      {
+        "byte": 96,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 95,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 83,
+      "value": 0,
+      "require_nonzero_first": true
+    },
+    "minimal_action_set": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "status": "verified",
+    "note": "100.0% reward match vs ALE (101 events)"
+  },
+  "atlantis": {
+    "game": "atlantis",
+    "score_bytes": [
+      {
+        "byte": 35,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 34,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 113,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      11,
+      12
+    ],
+    "status": "verified",
+    "note": "97.0% reward match vs ALE (99 events)"
+  },
+  "bank_heist": {
+    "game": "bank_heist",
+    "score_bytes": [
+      {
+        "byte": 90,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 85,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "note": "97.5% reward match vs ALE (40 events)"
+  },
+  "battle_zone": {
+    "game": "battle_zone",
+    "score_bytes": [],
+    "lives": {
+      "mode": "byte",
+      "byte": 58,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "lives_only",
+    "note": "Battle Zone score not accessible in RAM (TIA-rendered). Lives byte 58 confirmed correct. Reward column will be 0 \u2014 use episode length and survival as performance proxies.",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "centipede": {
+    "game": "centipede",
+    "score_bytes": [
+      {
+        "byte": 118,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 117,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 109,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "note": "lives byte 109 seeded from ALE source; run discover_bytes for score",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "chopper_command": {
+    "game": "chopper_command",
+    "score_bytes": [
+      {
+        "byte": 110,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 100,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "note": "score byte110 BCD\u00d7100, 100% match with 1-frame lag (engine writes score after reward). byte16 unused (always 0 in practice).",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "crazy_climber": {
+    "game": "crazy_climber",
+    "score_bytes": [
+      {
+        "byte": 3,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 2,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 42,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "status": "verified",
+    "note": "90.6% discovery match (timing offset likely). Aligned output confirmed correct reward 4400 and terminal. Score bytes 3+2 valid.",
+    "agent_action_set": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
+  },
+  "defender": {
+    "game": "defender",
+    "score_bytes": [],
+    "lives": {
+      "mode": "byte",
+      "byte": 66,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "lives_only",
+    "note": "Score not accessible in RAM (ALE reads it via internal emulator state). Discovery bytes 29+30 are spurious. Lives byte 66 confirmed correct. Same situation as Battle Zone.",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "gravitar": {
+    "game": "gravitar",
+    "score_bytes": [
+      {
+        "byte": 9,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 8,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 4,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "note": "97.5% reward match vs ALE (40 events)"
+  },
+  "hero": {
+    "game": "hero",
+    "score_bytes": [
+      {
+        "byte": 57,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 56,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 51,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "note": "100.0% reward match vs ALE (156 events)"
+  },
+  "name_this_game": {
+    "game": "name_this_game",
+    "score_bytes": [
+      {
+        "byte": 70,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 69,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 71,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      3,
+      4,
+      11,
+      12
+    ],
+    "status": "verified",
+    "note": "100.0% reward match vs ALE (141 events)"
+  },
+  "phoenix": {
+    "game": "phoenix",
+    "score_bytes": [
+      {
+        "byte": 71,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 72,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 75,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      3,
+      4,
+      5,
+      11,
+      12,
+      13
+    ],
+    "status": "verified",
+    "note": "100.0% reward match vs ALE (62 events)"
+  },
+  "seaquest": {
+    "game": "seaquest",
+    "score_bytes": [
+      {
+        "byte": 58,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 57,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 59,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "note": "lives byte 59 seeded from ALE source; run discover_bytes for score",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "space_invaders": {
+    "game": "space_invaders",
+    "score_bytes": [
+      {
+        "byte": 104,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 102,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 73,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      3,
+      4,
+      11,
+      12
+    ],
+    "status": "verified",
+    "note": "lives byte 73 seeded from ALE source; run discover_bytes for score",
+    "agent_action_set": [
+      0,
+      1,
+      3,
+      4,
+      11,
+      12
+    ]
+  },
+  "alien": {
+    "game": "alien",
+    "score_bytes": [
+      {
+        "byte": 73,
+        "format": "binary",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 91,
+        "format": "binary",
+        "weight": 1,
+        "scale": 10
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 64,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "note": "95.1% reward match vs ALE (245 events)",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "amidar": {
+    "game": "amidar",
+    "score_bytes": [
+      {
+        "byte": 89,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 54,
+      "value": 37
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      11,
+      12,
+      13
+    ],
+    "status": "verified",
+    "note": "97.5% reward match vs ALE (40 events)",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      11,
+      12,
+      13
+    ]
+  },
+  "asteroids": {
+    "game": "asteroids",
+    "score_bytes": [
+      {
+        "byte": 61,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 62,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 10
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 60,
+      "value": 0,
+      "require_nonzero_first": true
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "status": "verified",
+    "note": "97.4% reward match vs ALE (76 events) | terminal byte60==0 restored (validated: only final frames, no mid-game hits on human session)."
+  },
+  "beam_rider": {
+    "game": "beam_rider",
+    "score_bytes": [
+      {
+        "byte": 9,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 10,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 12,
+      "value": 6
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      11,
+      12
+    ],
+    "status": "verified",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      11,
+      12
+    ],
+    "note": "terminal ram_12==6 (validated: only at game over, 0% in-play across 60k frames + confirmed on 2 human sessions). ram_83 was WRONG (reads 0 during normal play too)."
+  },
+  "berzerk": {
+    "game": "berzerk",
+    "score_bytes": [
+      {
+        "byte": 95,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 94,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 90,
+      "value": 255
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "bowling": {
+    "game": "bowling",
+    "score_bytes": [
+      {
+        "byte": 33,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 6,
+      "value": 8
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      5,
+      10,
+      13
+    ],
+    "status": "verified",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      5,
+      10,
+      13
+    ],
+    "note": "terminal ram_6==8 (also ram_25==1). Validated 0.00% in-play across 42k ALE frames + human session fires at frame 12186 (correct game-over after 10 frames)."
+  },
+  "boxing": {
+    "game": "boxing",
+    "score_bytes": [
+      {
+        "byte": 18,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 19,
+        "format": "bcd",
+        "weight": -1,
+        "scale": 1
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 21,
+      "value": 12
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "note": "terminal ram_21==12. Validated 0.000% in-play across 57k ALE frames. Fires at frame 7122 in human session (game ends after 2 min or KO)."
+  },
+  "demon_attack": {
+    "game": "demon_attack",
+    "score_bytes": [],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 53,
+      "value": 48
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      3,
+      4,
+      11,
+      12
+    ],
+    "status": "lives_only",
+    "agent_action_set": [
+      0,
+      1,
+      3,
+      4,
+      11,
+      12
+    ],
+    "note": "terminal byte53==48 confirmed. Score not accessible in RAM (ALE reads internally). Discovery bytes 3+125 are spurious; score_cap terminal from discovery was wrong and overridden."
+  },
+  "double_dunk": {
+    "game": "double_dunk",
+    "score_bytes": [],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "enduro": {
+    "game": "enduro",
+    "score_bytes": [],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      3,
+      4,
+      5,
+      8,
+      9,
+      11,
+      12
+    ],
+    "status": "lives_only",
+    "agent_action_set": [
+      0,
+      1,
+      3,
+      4,
+      5,
+      8,
+      9,
+      11,
+      12
+    ],
+    "note": "Score not cleanly decodable from RAM (ram_71 cars-counter only 61% correlation; ALE computes passes internally). Reward unavailable. Day-end auto-stop via low-activity detection in browser (not a byte terminal)."
+  },
+  "fishing_derby": {
+    "game": "fishing_derby",
+    "score_bytes": [
+      {
+        "byte": 115,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 114,
+        "format": "bcd",
+        "weight": -1,
+        "scale": 1
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 62,
+      "value": 153
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "note": "terminal ram_62==153 (also ram_64==153). Validated 0.013% in-play across 10 ALE seeds. Fires at correct game-over in human session (frame 9617). Fixed-time game like Boxing."
+  },
+  "freeway": {
+    "game": "freeway",
+    "score_bytes": [
+      {
+        "byte": 103,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 22,
+      "value": 1
+    },
+    "minimal_action_set": [
+      0,
+      2,
+      5
+    ],
+    "status": "verified",
+    "agent_action_set": [
+      0,
+      2,
+      5
+    ],
+    "note": "terminal ram_22==1. Validated 0.012% in-play across 12 ALE seeds. Fires at frame 8171 in human session. Fixed-time game (~2m30s). Only UP/DOWN control your chicken; second chicken is CPU-controlled."
+  },
+  "frostbite": {
+    "game": "frostbite",
+    "score_bytes": [
+      {
+        "byte": 74,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 70,
+      "value": 255
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "note": "terminal ram_70==255. Fires when game enters end sequence (temperature timeout or final death animation). Zero false hits across 28k ALE frames. Confirmed on 2 human sessions. NOTE: this terminal fires via a game mechanic not visible to ALE's random agent (temperature/timeout) - only human play reveals it."
+  },
+  "gopher": {
+    "game": "gopher",
+    "score_bytes": [
+      {
+        "byte": 50,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 49,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 38,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      10,
+      11,
+      12
+    ],
+    "status": "verified",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      10,
+      11,
+      12
+    ],
+    "note": "lives byte ram_38 (3->1->0). Confirmed on human session: game_over at frame 5257, new game started frame 6258. ram_51 tracks a secondary counter."
+  },
+  "ice_hockey": {
+    "game": "ice_hockey",
+    "score_bytes": [],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "jamesbond": {
+    "game": "jamesbond",
+    "score_bytes": [
+      {
+        "byte": 92,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 93,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 12,
+      "value": 104
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "note": "97.5% reward match vs ALE (40 events)"
+  },
+  "kangaroo": {
+    "game": "kangaroo",
+    "score_bytes": [],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 21,
+      "value": 31
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "krull": {
+    "game": "krull",
+    "score_bytes": [
+      {
+        "byte": 30,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 29,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "note": "100.0% reward match vs ALE (560 events)"
+  },
+  "kung_fu_master": {
+    "game": "kung_fu_master",
+    "score_bytes": [
+      {
+        "byte": 25,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      8,
+      9,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "agent_action_set": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      8,
+      9,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "note": "97.5% reward match vs ALE (40 events). Score = ram_25 BCD \u00d7 100 (100 pts per enemy; no ones/tens digit). No terminal detection; manual stop. Human recordings include actions outside agent minimal set (1, 7, 10) \u2014 note for action-structure comparisons."
+  },
+  "montezuma_revenge": {
+    "game": "montezuma_revenge",
+    "score_bytes": [
+      {
+        "byte": 19,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 20,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      },
+      {
+        "byte": 21,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 10000
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 58,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "note": "Score bytes from AtariARI (Anand et al. 2019): b19(bcd*1)+b20(bcd*100)+b21(bcd*10000). Lives byte 58 (ALE reads +1 vs RAM). Score unverifiable without trained agent - random agent never scores."
+  },
+  "ms_pacman": {
+    "game": "ms_pacman",
+    "score_bytes": [],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
+  },
+  "pitfall": {
+    "game": "pitfall",
+    "score_bytes": [],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "private_eye": {
+    "game": "private_eye",
+    "score_bytes": [],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "qbert": {
+    "game": "qbert",
+    "score_bytes": [
+      {
+        "byte": 91,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 90,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "status": "verified",
+    "note": "100.0% reward match vs ALE (94 events)"
+  },
+  "riverraid": {
+    "game": "riverraid",
+    "score_bytes": [],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 114,
+      "value": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "road_runner": {
+    "game": "road_runner",
+    "score_bytes": [],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "robotank": {
+    "game": "robotank",
+    "score_bytes": [
+      {
+        "byte": 53,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      }
+    ],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "note": "97.5% reward match vs ALE (40 events)"
+  },
+  "skiing": {
+    "game": "skiing",
+    "score_bytes": [
+      {
+        "byte": 106,
+        "format": "bcd",
+        "weight": 1,
+        "scale": -1
+      },
+      {
+        "byte": 105,
+        "format": "bcd",
+        "weight": 1,
+        "scale": -100
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 17,
+      "value": 255
+    },
+    "minimal_action_set": [
+      0,
+      3,
+      4
+    ],
+    "status": "verified",
+    "agent_action_set": [
+      0,
+      3,
+      4
+    ],
+    "note": "terminal ram_17==255 (0.003% in-play). Score = negative elapsed time in centiseconds: -(ram_105_bcd*100 + ram_106_bcd). Matches ALE within 1-2 centiseconds. Lower (more negative) = faster run. Time-minimization game, unlike score-maximization games."
+  },
+  "solaris": {
+    "game": "solaris",
+    "score_bytes": [
+      {
+        "byte": 93,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 92,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 10
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 89,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "partial",
+    "note": "partial match (87.5%, 40 events) \u2014 review"
+  },
+  "star_gunner": {
+    "game": "star_gunner",
+    "score_bytes": [
+      {
+        "byte": 4,
+        "format": "binary",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 3,
+        "format": "binary",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 2,
+      "value": 255
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "partial",
+    "note": "partial match (59.6%, 40 events) \u2014 review"
+  },
+  "surround": {
+    "game": "surround",
+    "score_bytes": [],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      2,
+      3,
+      4,
+      5
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "tennis": {
+    "game": "tennis",
+    "score_bytes": [],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "time_pilot": {
+    "game": "time_pilot",
+    "score_bytes": [
+      {
+        "byte": 120,
+        "format": "binary",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 13,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      11,
+      12,
+      13
+    ],
+    "status": "partial",
+    "note": "partial match (86.0%, 40 events) \u2014 review"
+  },
+  "tutankham": {
+    "game": "tutankham",
+    "score_bytes": [
+      {
+        "byte": 28,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 30,
+      "value": 0
+    },
+    "minimal_action_set": [
+      0,
+      2,
+      3,
+      4,
+      5,
+      10,
+      11,
+      12
+    ],
+    "status": "verified",
+    "note": "97.5% reward match vs ALE (40 events)"
+  },
+  "up_n_down": {
+    "game": "up_n_down",
+    "score_bytes": [
+      {
+        "byte": 2,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 1,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      5,
+      10,
+      13
+    ],
+    "status": "verified",
+    "note": "100.0% reward match vs ALE (150 events)"
+  },
+  "venture": {
+    "game": "venture",
+    "score_bytes": [
+      {
+        "byte": 71,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 72,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "byte",
+      "byte": 70,
+      "offset": 0
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "note": "Score bytes from AtariARI (Anand et al. 2019): b71(bcd*1)+b72(bcd*100). Lives byte 70 (ALE reads +1 vs RAM). Score unverifiable without trained agent."
+  },
+  "video_pinball": {
+    "game": "video_pinball",
+    "score_bytes": [
+      {
+        "byte": 48,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 50,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      11,
+      12
+    ],
+    "status": "verified",
+    "note": "100.0% reward match vs ALE (176 events)"
+  },
+  "wizard_of_wor": {
+    "game": "wizard_of_wor",
+    "score_bytes": [],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      11,
+      12,
+      13
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      11,
+      12,
+      13
+    ]
+  },
+  "yars_revenge": {
+    "game": "yars_revenge",
+    "score_bytes": [
+      {
+        "byte": 98,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      },
+      {
+        "byte": 97,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100
+      }
+    ],
+    "lives": {
+      "mode": "terminal_value",
+      "byte": 0,
+      "value": 128
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "verified",
+    "note": "100.0% reward match vs ALE (83 events)"
+  },
+  "zaxxon": {
+    "game": "zaxxon",
+    "score_bytes": [],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "status": "lives_seeded",
+    "agent_action_set": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "pacman": {
+    "game": "pacman",
+    "score_bytes": [
+      {
+        "byte": 76,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 1
+      }
+    ],
+    "lives": {
+      "mode": "none"
+    },
+    "minimal_action_set": [
+      0,
+      2,
+      3,
+      4,
+      5
+    ],
+    "status": "verified",
+    "note": "100.0% reward match vs ALE (205 events)"
+  }
+}
