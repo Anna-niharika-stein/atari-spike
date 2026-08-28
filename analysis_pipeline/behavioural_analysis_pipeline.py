@@ -85,11 +85,7 @@ raw ~60Hz recorder output.
 -------------------------------------------------------------------------------
 Usage
 -------------------------------------------------------------------------------
-  python behavioural_pipeline.py
-  python behavioural_pipeline.py --games breakout seaquest freeway
-  python behavioural_pipeline.py --skip-ram
-  python behavioural_pipeline.py --no-figures
-  python behavioural_pipeline.py --save-aligned
+python behavioural_analysis_pipeline.py --games breakout --human-root path/to/human_data --agent-root path/to/agent_data
 """
 
 from __future__ import annotations
