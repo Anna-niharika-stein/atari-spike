@@ -1,6 +1,6 @@
 # atari-spike
 
-**Human Atari Gameplay Recording, Processing, and Behavioural Analysis Pipeline**
+**Human Atari Gameplay Recording, Processing, and Behavioural Analysis Pipeline for the Atari 57 benchmark**
 
 This repository contains the full data collection and analysis infrastructure developed as part of the [GAMECHAR project].
 
@@ -21,7 +21,7 @@ atari-spike/
 
 ## Games
 
-The recorder in `human_gameplay_interface` is operational for **44 out of 57** Atari benchmark games. The remaining 13 were excluded due to impractical controls, menu-based mechanics, or score signals that are not recoverable from RAM.
+The recorder in `human_gameplay_interface` is operational for **44 out of 57** Atari benchmark games. The remaining 13 were excluded due to impractical controls, menu-based mechanics, or descriptors that are not recoverable from RAM.
 
 The analysis pipeline in `analysis_pipeline` is currently being validated for the selected six games, selected to span a range of complexity and difficulty for both humans and RL agents:
 
