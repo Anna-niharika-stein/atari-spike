@@ -92,7 +92,7 @@ Runs the full behavioural comparison analysis across all usable games and genera
 
 ## Data
 
-Raw recordings, aligned CSVs, agent logs, and trained model checkpoints are not included in this repository. Data is stored locally and shared separately within the GAMECHAR project.
+Raw recordings, aligned CSVs, agent logs, and trained model checkpoints are not included in this repository. Data is stored locally.
 
 ---
 
