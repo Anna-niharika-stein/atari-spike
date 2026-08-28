@@ -12,8 +12,8 @@ The project compares human and reinforcement-learning agent gameplay across Atar
 
 ```
 atari-spike/
-├── human_gameplay_interface/           # Browser-based Atari recorder
-├── raw_human_data_processing_pipeline/ # Post-recording data processing
+├── human_gameplay_interface/           # Browser-based Atari game play recorder
+├── raw_human_data_processing_pipeline/ # Raw human csv processing
 └── analysis_pipeline/                  # Behavioural analysis and agent CSV generation
 ```
 
@@ -23,7 +23,7 @@ atari-spike/
 
 The recorder in `human_gameplay_interface` is operational for **44 out of 57** Atari benchmark games. The remaining 13 were excluded due to impractical controls, menu-based mechanics, or score signals that are not recoverable from RAM.
 
-The analysis pipeline in `analysis_pipeline` is currently fully validated for six games, selected to span a range of complexity and difficulty for both humans and RL agents:
+The analysis pipeline in `analysis_pipeline` is currently being validated for the selected six games, selected to span a range of complexity and difficulty for both humans and RL agents:
 
 | Game | Genre | Human difficulty | Agent difficulty |
 |---|---|---|---|
