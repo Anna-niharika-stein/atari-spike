@@ -14,7 +14,7 @@ The project compares human and reinforcement-learning agent gameplay across Atar
 atari-spike/
 ├── human_gameplay_interface/           # Browser-based Atari game play recorder
 ├── raw_human_data_processing_pipeline/ # Raw human csv processing
-└── analysis_pipeline/                  # Behavioural analysis and agent CSV generation
+└── analysis_pipeline/                  # Behavioural comparison analysis between Human and Agent csv's.
 ```
 
 ---
