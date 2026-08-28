@@ -2,7 +2,7 @@
 
 **Human Atari Gameplay Recording, Processing, and Behavioural Analysis Pipeline**
 
-This repository contains the full data collection and analysis infrastructure developed as part of the [GAMECHAR project](https://cordis.europa.eu/project/id/101220528).
+This repository contains the full data collection and analysis infrastructure developed as part of the [GAMECHAR project].
 
 The project compares human and reinforcement-learning agent gameplay across Atari 2600 games, extracting behavioural descriptors across three classes: performance, action structure, and RAM-based state visitation.
 
