@@ -1,3 +1,4 @@
+Here's the full README with the launch section added after Setup:```markdown
 # atari-spike
 
 **Human Atari Gameplay Recording, Processing, and Behavioural Analysis Pipeline for the Atari 57 benchmark**
@@ -108,3 +109,39 @@ python -m venv .venv
 pip install ale-py gymnasium[atari,accept-rom-license] stable-baselines3[extra] huggingface-sb3 pandas numpy scikit-learn matplotlib
 ```
 
+Note: `gym==0.26.2` is required alongside `gymnasium` to load the pretrained DQN models in `generate_agent_csvs.ipynb`.
+
+```bash
+pip install gym==0.26.2
+```
+
+Raw recordings, aligned CSVs, and agent data are not included — see each pipeline section above for how to generate them.
+
+---
+
+## Launching the interface
+
+The recorder requires the Atari ROM files, which are not included in the repository (copyrighted). Extract them from the `ale-py` package you installed in Setup:
+
+```bash
+cd human_gameplay_interface
+python -c "import ale_py, shutil, pathlib; shutil.copytree(pathlib.Path(ale_py.__file__).parent / 'roms', 'atari_ale_roms')"
+```
+
+This creates `human_gameplay_interface/atari_ale_roms/` containing all the `.bin` ROM files the interface needs.
+
+Then open the interface:
+
+```
+human_gameplay_interface/index.html --> right click --> Open with Live Server
+```
+
+This opens it directly in your browser. If games fail to load their ROMs (browser blocks local file access), serve over HTTP instead:
+
+```bash
+# from inside human_gameplay_interface/
+python -m http.server 8000
+```
+
+Then go to `http://localhost:8000` in your browser.
+```
