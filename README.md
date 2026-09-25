@@ -119,7 +119,7 @@ Raw recordings, aligned CSVs, and agent data are not included — see each pipel
 
 ---
 
-## Launching the interface
+## Installing the Game ROMS and launching the interface
 
 The recorder requires the Atari ROM files, which are not included in the repository (copyrighted). Extract them from the `ale-py` package you installed in Setup:
 
