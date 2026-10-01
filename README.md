@@ -55,7 +55,7 @@ A browser-based Atari gameplay recorder built on [Javatari.js](https://javatari.
 
 Converts raw human recordings into structured, agent-comparable aligned CSVs through a multi-step decoding process:
 
-1. **Score decoding** — raw RAM bytes are decoded into a reward signal using per-game byte configurations in `game_config.json`. Score bytes are identified and validated via ALE agent rollouts (`discover_bytes.py`) or, for games a random agent cannot score in, via human session analysis (`discover_bytes_human.py`). Formats include binary and BCD (binary-coded decimal), with per-byte scale weights.
+1. **Score decoding** — raw RAM bytes are decoded into a reward signal using per-game byte configurations in `game_config.json`. Score bytes are identified and validated via ALE agent rollouts (`discover_bytes.py`). Formats include binary and BCD (binary-coded decimal), with per-byte scale weights.
 2. **Terminal detection** — episode boundaries are identified from RAM-based terminal signals (lives counters, terminal byte values) defined per game in `game_config.json`.
 3. **Temporal alignment** — raw ~60Hz human frames are aggregated into non-overlapping 4-frame decision windows to match the agent's frameskip-4 action cadence. The modal action per window is taken as the representative action, with the first frame's RAM state as the pre-action snapshot.
 4. **Post-terminal trimming** — frames recorded after the terminal signal are dropped to ensure clean episode boundaries.
@@ -63,9 +63,11 @@ Converts raw human recordings into structured, agent-comparable aligned CSVs thr
 **Files**
 - `atari_common.py` — shared utilities (BCD decode, config loading, score assembly)
 - `discover_bytes.py` — automated score-byte discovery via ALE agent rollouts
-- `discover_bytes_human.py` — score-byte discovery from human sessions (for games a random agent cannot score in)
 - `align_to_agent.py` — aligns raw human frames to agent 4-frame decision windows
 - `run_pipeline.py` — end-to-end pipeline runner for a single game session
+- `seed_config.py` — pre-fills `game_config.json` with lives bytes taken from the ALE source
+- `set_agent_action_set.py` — records the action set your agents actually used, so human actions are mapped to the same indices
+- `extract_atari57_roms.py` — copies the Atari-57 ROMs from `ale-py` into `atari_ale_roms/` for the recorder
 - `game_config.json` — master config for all 57 Atari games (score bytes, terminal detection, lives, action sets, validation status)
 
 **Output** — aligned session CSV (265 columns):
@@ -78,7 +80,7 @@ Converts raw human recordings into structured, agent-comparable aligned CSVs thr
 Runs the full behavioural comparison analysis across all usable games and generates agent evaluation CSVs. Currently validated for the six games listed above.
 
 **Files**
-- `behavioural_pipeline.py` — unified analysis pipeline; computes all three descriptor classes (performance, action structure, RAM-state visitation) across all usable games in `game_config.json`. FIRE handling is auto-derived per game from its minimal action set and can be overridden in `game_config.json`.
+- `behavioural_analysis_pipeline.py` — unified analysis pipeline; computes all three descriptor classes (performance, action structure, RAM-state visitation) across all usable games in `game_config.json`. FIRE handling is auto-derived per game from its minimal action set and can be overridden in `game_config.json`.
 - `generate_agent_csvs.ipynb` — generates 265-column agent CSVs for the six validation games using pretrained sb3 DQN models (Breakout, Space Invaders, Seaquest) and locally trained PPO agents (Freeway, Asterix, Skiing)
 
 **Output per game:**
@@ -103,8 +105,19 @@ git clone https://github.com/Anna-niharika-stein/atari-spike.git
 cd atari-spike
 
 python -m venv .venv
-.venv\Scripts\activate  # Windows
+.venv\Scripts\activate          # Windows
+# source .venv/bin/activate     # macOS / Linux
+```
 
+**To only run the gameplay interface**, you need just one package:
+
+```bash
+pip install ale-py
+```
+
+**To run the processing and analysis pipelines**, install the full set:
+
+```bash
 pip install ale-py gymnasium[atari,accept-rom-license] stable-baselines3[extra] huggingface-sb3 pandas numpy scikit-learn matplotlib
 ```
 
@@ -129,18 +142,23 @@ python -c "import ale_py, shutil, pathlib; shutil.copytree(pathlib.Path(ale_py._
 
 This creates `human_gameplay_interface/atari_ale_roms/` containing all the `.bin` ROM files the interface needs.
 
-Then open the interface:
-
-```
-human_gameplay_interface/index.html --> right click --> Open with Live Server
-```
-
-This opens it directly in your browser. If games fail to load their ROMs (browser blocks local file access), serve over HTTP instead:
+Go back to the repo root before starting the interface:
 
 ```bash
-# from inside human_gameplay_interface/
+cd ..
+```
+
+Then start a local web server **from the repo root** (the interface reads `game_config.json` from `raw_human_data_processing_pipeline/`, so the server needs access to the whole repo):
+
+```bash
+# from the atari-spike/ folder
 python -m http.server 8000
 ```
 
-Then go to `http://localhost:8000` in your browser.
-```
+Then go to `http://localhost:8000/human_gameplay_interface/` in your browser (Chrome or Edge recommended). Keep the terminal open while you use the interface.
+
+Alternatively, open the whole `atari-spike` folder in VS Code (not just `human_gameplay_interface/`), then right-click `human_gameplay_interface/index.html` → **Open with Live Server**.
+
+Do not open `index.html` by double-clicking it: browsers block local files from loading the ROMs and config.
+
+To check that the config loaded, open the browser console (F12) and look for `Loaded game config from ../raw_human_data_processing_pipeline/game_config.json`.
