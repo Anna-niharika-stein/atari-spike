@@ -368,7 +368,23 @@
   } catch (e) { /* non-fatal: panel stays blank, recorder still works */ }
   // annotate dropdown: check which ROMs are actually present on the server,
   // and mark missing ones so users know what to copy from ale_py.
-  fetch("game_config.json").then(r=>r.ok?r.json():null).then(cfg=>{
+   // game_config.json lives in raw_human_data_processing_pipeline/. Try a local
+  // copy first, then the pipeline folder (works when served from the repo root).
+  const CONFIG_PATHS = [
+    "game_config.json",
+    "../raw_human_data_processing_pipeline/game_config.json",
+  ];
+  async function loadGameConfig() {
+    for (const p of CONFIG_PATHS) {
+      try {
+        const r = await fetch(p);
+        if (r.ok) { console.log("Loaded game config from " + p); return await r.json(); }
+      } catch (e) { /* try the next path */ }
+    }
+    console.warn("game_config.json not found; using built-in lives fallback.");
+    return null;
+  }
+  loadGameConfig().then(cfg=>{
     if (!cfg) return;
     for (const o of sel.options) {
       const e = cfg[o.value];
