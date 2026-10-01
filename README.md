@@ -1,4 +1,3 @@
-Here's the full README with the launch section added after Setup:```markdown
 # atari-spike
 
 **Human Atari Gameplay Recording, Processing, and Behavioural Analysis Pipeline for the Atari 57 benchmark**
