@@ -71,21 +71,26 @@ The rule applied to each game is logged to outputs/_summary/fire_handling.csv.
 -------------------------------------------------------------------------------
 Data layout
 -------------------------------------------------------------------------------
-  human_raw_test_data/<game>/*.csv     aligned human session CSV (265 cols)
-  agent_test_data/<game>/ppo*.csv      PPO agent log (265 cols)
-  agent_test_data/<game>/dqn*.csv      DQN agent log (265 cols)
+  aligned/<game>/*.csv             aligned human session CSV (265 cols)
+  agent_test_data/<game>/ppo*.csv  PPO agent log (265 cols)
+  agent_test_data/<game>/dqn*.csv  DQN agent log (265 cols)
 
 All CSVs must follow the 265-column schema:
   run_ts, episode, step, action, reward, done, episode_return,
   lives_pre, lives_post, ram_pre_0..127, ram_post_0..127
 
-Human sessions should be the aligned output of run_pipeline.py, not the
-raw ~60Hz recorder output.
+Human sessions are the aligned output of run_pipeline.py (default frameskip 4,
+one row per decision) -- the SAME cadence as the agent logs. They are pooled
+as-is; this pipeline does not re-window them.
 
 -------------------------------------------------------------------------------
 Usage
 -------------------------------------------------------------------------------
-python behavioural_analysis_pipeline.py --games breakout --human-root path/to/human_data --agent-root path/to/agent_data
+  python behavioural_pipeline.py
+  python behavioural_pipeline.py --games breakout seaquest freeway
+  python behavioural_pipeline.py --skip-ram
+  python behavioural_pipeline.py --no-figures
+  python behavioural_pipeline.py --save-aligned
 """
 
 from __future__ import annotations
@@ -140,7 +145,7 @@ COLLAPSE_TO_MOVEMENT = {
 
 SOURCE_ORDER = ["Human", "PPO", "DQN"]
 AGENT_RAW_FRAMES_PER_ROW = 4
-HUMAN_RAW_FRAMES_PER_ROW = 1
+HUMAN_RAW_FRAMES_PER_ROW = 4
 CAP_THRESHOLD_LOGGED_ROWS = 9990   # episodes capped at ~10,000 logged steps
 
 BASE_COLS = ["run_ts", "episode", "step", "action", "reward", "done",
@@ -354,7 +359,13 @@ def aggregate_human_to_windows(human_raw, game):
 def build_aligned(human_raw, agent_raws, game):
     frames = []
     if human_raw is not None:
-        frames.append(aggregate_human_to_windows(human_raw, game))
+        # Human files in aligned/<game>/ are already frameskip-4 (one row = one
+        # decision = 4 raw frames), the same cadence as the agent logs, so they
+        # are pooled as-is -- no second windowing. aggregate_human_to_windows()
+        # is retained for optional raw 60 Hz input but is not used in this flow.
+        h = human_raw.copy()
+        h["raw_frames_per_row"] = AGENT_RAW_FRAMES_PER_ROW
+        frames.append(h)
     for src, df in agent_raws.items():
         a = df.copy()
         a["raw_frames_per_row"] = 4
@@ -779,7 +790,7 @@ def main():
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--config", default="game_config.json")
-    ap.add_argument("--human-root", default="human_raw_test_data")
+    ap.add_argument("--human-root", default="aligned")
     ap.add_argument("--agent-root", default="agent_test_data")
     ap.add_argument("--out-root", default="outputs")
     ap.add_argument("--games", nargs="*", default=None,
