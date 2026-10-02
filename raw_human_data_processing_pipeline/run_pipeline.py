@@ -138,8 +138,9 @@ def process(path, out_dir, frameskip, auto_discover):
     med_dt, timing_probs = timing_check(t_ms, frameskip)
 
     base = os.path.splitext(os.path.basename(path))[0]
-    out = os.path.join(out_dir, base + "_aligned.csv")
-    os.makedirs(out_dir, exist_ok=True)
+    game_dir = os.path.join(out_dir, game)          # per-game subfolder: aligned/<game>/
+    os.makedirs(game_dir, exist_ok=True)
+    out = os.path.join(game_dir, base + "_aligned.csv")
 
     # suppress convert()'s own prints; we show a unified QA summary instead
     import io, contextlib
@@ -181,7 +182,7 @@ def process(path, out_dir, frameskip, auto_discover):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("input", help="a raw session CSV, or a folder of them")
-    ap.add_argument("--out-dir", default="aligned", help="where to write aligned CSVs (default ./aligned)")
+    ap.add_argument("--out-dir", default="aligned", help="root for aligned CSVs; each file goes in <out-dir>/<game>/ (default ./aligned)")
     ap.add_argument("--frameskip", type=int, default=4, help="frames per decision step (default 4)")
     ap.add_argument("--auto-discover", action="store_true", help="auto-configure any unseen game")
     ap.add_argument("--combine", metavar="CSV",
