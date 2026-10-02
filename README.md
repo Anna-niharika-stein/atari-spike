@@ -14,8 +14,41 @@ The project compares human and reinforcement-learning agent gameplay across Atar
 atari-spike/
 ├── human_gameplay_interface/           # Browser-based Atari game play recorder
 ├── raw_human_data_processing_pipeline/ # Raw human csv processing
-└── analysis_pipeline/                  # Behavioural comparison analysis between Human and Agent csv's.
+├── analysis_pipeline/                  # Behavioural comparison analysis between Human and Agent csv's.
+│
+│   # data folders (local, not committed to Git)
+├── raw_human_data_files/               # Raw browser captures (131 cols)
+├── aligned/<game>/                     # Processed human CSVs (265 cols), one subfolder per game
+├── agent_test_data/<game>/             # Agent CSVs (265 cols), one subfolder per game
+└── outputs/<game>/                     # Analysis tables + figures
 ```
+
+---
+
+## Data flow
+
+The three stages chain together through the local data folders:
+
+```
+Record  →  raw_human_data_files/               raw browser captures (131 cols)
+             │
+             │   run_pipeline.py   (RAM decode + frameskip-4 modal windowing)
+             ▼
+Process →  aligned/<game>/                      processed human CSVs (265 cols)
+             │
+             │   + agent_test_data/<game>/      agent CSVs (265 cols, from generate_agent_csvs.ipynb)
+             ▼
+Compare →  behavioural_analysis_pipeline.py
+             │
+             ▼
+           outputs/<game>/                      descriptor tables + figures
+```
+
+- **Record** — play in the browser recorder; one raw CSV per session is written to `raw_human_data_files/`.
+- **Process** — run `run_pipeline.py` on a raw CSV. It decodes the RAM and aligns the ~60Hz frames to the agent's 4-frame decision rate, writing the 265-column output into `aligned/<game>/` (the game is read from the file's metadata, so each session lands in its own game subfolder).
+- **Compare** — run `behavioural_analysis_pipeline.py`. It reads human CSVs from `aligned/<game>/` and agent CSVs from `agent_test_data/<game>/`, and writes the descriptor tables and figures to `outputs/<game>/`.
+
+Human and agent CSVs share the same 265-column schema and the same once-per-4-frames cadence, which is what makes them directly comparable. Agent CSVs are produced separately by `analysis_pipeline/generate_agent_csvs.ipynb`.
 
 ---
 
