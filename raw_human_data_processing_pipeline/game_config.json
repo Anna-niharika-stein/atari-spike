@@ -7,6 +7,13 @@
         "format": "bcd",
         "weight": 1,
         "scale": 1
+      },
+      {
+        "byte": 76,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 100,
+        "mask": 15
       }
     ],
     "lives": {
@@ -27,7 +34,10 @@
       1,
       3,
       4
-    ]
+    ],
+    "report_without_stuck": true,
+    "fire_handling": "collapse",
+    "action_encoding": "index"
   },
   "pong": {
     "game": "pong",
@@ -123,6 +133,12 @@
         "format": "bcd",
         "weight": 1,
         "scale": 100
+      },
+      {
+        "byte": 94,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 10000
       }
     ],
     "lives": {
@@ -143,7 +159,12 @@
       9
     ],
     "status": "verified",
-    "note": "100.0% reward match vs ALE (101 events)"
+    "note": "100.0% reward match vs ALE (101 events)",
+    "lives_count": {
+      "byte": 83,
+      "mask": 15
+    },
+    "action_encoding": "index"
   },
   "atlantis": {
     "game": "atlantis",
@@ -651,12 +672,18 @@
         "format": "bcd",
         "weight": 1,
         "scale": 100
+      },
+      {
+        "byte": 56,
+        "format": "bcd",
+        "weight": 1,
+        "scale": 10000
       }
     ],
     "lives": {
       "mode": "byte",
       "byte": 59,
-      "offset": 0
+      "offset": 1
     },
     "minimal_action_set": [
       0,
@@ -699,7 +726,13 @@
       15,
       16,
       17
-    ]
+    ],
+    "fire_handling": "keep",
+    "action_encoding": "index",
+    "game_over": {
+      "byte": 35,
+      "nonzero": true
+    }
   },
   "space_invaders": {
     "game": "space_invaders",
@@ -739,7 +772,10 @@
       4,
       11,
       12
-    ]
+    ],
+    "fire_handling": "keep",
+    "score_wrap": 10000,
+    "action_encoding": "index"
   },
   "alien": {
     "game": "alien",
@@ -1291,7 +1327,9 @@
       2,
       5
     ],
-    "note": "terminal ram_22==1. Validated 0.012% in-play across 12 ALE seeds. Fires at frame 8171 in human session. Fixed-time game (~2m30s). Only UP/DOWN control your chicken; second chicken is CPU-controlled."
+    "note": "terminal ram_22==1. Validated 0.012% in-play across 12 ALE seeds. Fires at frame 8171 in human session. Fixed-time game (~2m30s). Only UP/DOWN control your chicken; second chicken is CPU-controlled.",
+    "reward_clip_0_1": true,
+    "action_encoding": "index"
   },
   "frostbite": {
     "game": "frostbite",
@@ -2001,6 +2039,12 @@
         "format": "bcd",
         "weight": 1,
         "scale": -100
+      },
+      {
+        "byte": 104,
+        "format": "binary",
+        "weight": 1,
+        "scale": -6000
       }
     ],
     "lives": {
@@ -2019,7 +2063,16 @@
       3,
       4
     ],
-    "note": "terminal ram_17==255 (0.003% in-play). Score = negative elapsed time in centiseconds: -(ram_105_bcd*100 + ram_106_bcd). Matches ALE within 1-2 centiseconds. Lower (more negative) = faster run. Time-minimization game, unlike score-maximization games."
+    "note": "terminal ram_17==255 (0.003% in-play). Score = negative elapsed time in centiseconds: -(ram_105_bcd*100 + ram_106_bcd). Matches ALE within 1-2 centiseconds. Lower (more negative) = faster run. Time-minimization game, unlike score-maximization games.",
+    "action_encoding": "index",
+    "terminal_penalty": {
+      "byte": 107,
+      "format": "bcd",
+      "scale": -500,
+      "name": "missed_gates"
+    },
+    "score_is_time": true,
+    "time_units_per_second": 100
   },
   "solaris": {
     "game": "solaris",
